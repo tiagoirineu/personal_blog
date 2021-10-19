@@ -1,6 +1,6 @@
 ---
-bio: My research interests include data analysis, economics, and history.
-  matter.
+bio: My research interests include data analysis, probability, economics, and history.
+ 
 education:
   courses:
   - course: MSc in Economics
