@@ -29,8 +29,11 @@ content:
     tag: '*'
   - name: Deep Learning
     tag: Deep Learning
+  - name: Data Analysis
+    tag: data analysis
   - name: Other
     tag: Demo
+
 
 design:
   # Choose how many columns the section has. Valid values: '1' or '2'.
