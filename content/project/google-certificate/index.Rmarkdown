@@ -14,6 +14,11 @@ url_code: ""
 url_pdf: ""
 url_slides: ""
 url_video: ""
+
+output:
+  blogdown::html_page:
+    toc: true
+
 ---
 
 ```{r setup, include=FALSE}
@@ -259,14 +264,7 @@ trip_data_2 %>%
 
 
 
-For now, I have added all the variables I want. Before going into our analysis, let's inspect the stations name, so we can see if there is anything strange.
-
-We can use the code below to visually inspect the name of all stations. As the output would be too big. I will not share it in the final post. But I did use it to find out which stations should be ignore.
-
-```{r, results='hide'}
-unique(trip_data_2$start_station_name)
-```
-By visually inspecting the stations name, we can see that some stations that seems to be used for bike management. My assumption is that any ride that begins/ends in any of these stations should not  be considered But, before dropping them I want to count it
+There are some stations that in reality are maintenance facilities. We should drop all the rides that begin or end at them. First, I will check how many rides fall in this category. 
 
 ```{r}
 rows_to_drop <- c("WATSON TESTING - DIVVY","Base - 2132 W Hubbard Warehouse","DIVVY CASSETTE REPAIR MOBILE STATION","HUBBARD ST BIKE CHECKING (LBS-WH-TEST)")
@@ -403,7 +401,7 @@ trip_data_3 %>%
 
 #### Is there any difference between the hour-distribution of rides between the two groups?
 
-```{r}
+```{r Hourly distribution of rides}
 trip_data_3 %>% 
   group_by(start_hour, member_casual) %>% 
   summarise(number_of_trips = n()) %>% 
@@ -423,47 +421,64 @@ If we analyze this graph we can that there is a small hump close to 08:00 in the
 
 One possibility is that a considerable amount of member use our bicycles for commute. 
 
-We can further check this if we subset the data in weekdays and weekends. If my hyphoteses is true we will see a considerable hump on weekdays and see no difference at weekends.
+We can further check this if we subset the data on weekdays and weekends. If my hyphoteses is true we will see a considerable hump on weekdays and see no difference at weekends.
 
 
-```{r}
+First, let's plot the hourly distribution of rides for weekdays.
+
+```{r Weekday rides}
 trip_data_3 %>% 
-  select(day_of_week %in% !c("Saturday", "Sunday")) %>% 
+  filter(!day_of_week %in% c("Saturday", "Sunday")) %>% 
   group_by(start_hour, member_casual) %>% 
   summarise(number_of_trips = n()) %>% 
   ggplot((aes(x = start_hour, y = number_of_trips, color = member_casual))) +
   geom_point(aes(group= member_casual)) +
-  labs(title = "Rides per hour", subtitle = "Weekdays",
+  labs(title = "Members rides are bi-modal on weekdays.\nThere is a hump around 08:00 a.m.", subtitle = "Distribution of rides throughout the day - Weekdays only",
        y = "Number of trips in thousands", x = "") +
   scale_x_time(breaks = hms::as.hms(c('00:00:00',"03:00:00","06:00:00","08:00:00",'09:00:00', '12:00:00','15:00:00','18:00:00','21:00:00'))) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank()) +
+  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank(), legend.position = "none") +
   facet_grid(member_casual~.) 
 
 ```
 
+As we can see in the plot above, the hump around 08:00 is more pronounced when we focus on weekdays. This reinforce the idea that many members are using our bikes for commute, while the same does not seem to true for casual riders.
 
-Now, let's give a look at weekends.
+For concluding our analysis about the hourly distribution of rides, let's plot the data only for weekends.
 
-```{r}
-trip_data_3 %>% 
-  select(day_of_week %in% c("Saturday", "Sunday")) %>% 
+
+```{r Weekend rides}
+ trip_data_3 %>% 
+  filter(day_of_week %in% c("Saturday", "Sunday")) %>% 
   group_by(start_hour, member_casual) %>% 
   summarise(number_of_trips = n()) %>% 
   ggplot((aes(x = start_hour, y = number_of_trips, color = member_casual))) +
   geom_point(aes(group= member_casual)) +
-  labs(title = "Rides per hour", subtitle = "Weekends",
+  labs(title = "On weekends the distribution of rides are similar", subtitle = "Distribution of rides throughout the day - Weekend only",
        y = "Number of trips in thousands", x = "") +
   scale_x_time(breaks = hms::as.hms(c('00:00:00',"03:00:00","06:00:00","08:00:00",'09:00:00', '12:00:00','15:00:00','18:00:00','21:00:00'))) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank()) +
+  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank(), legend.position = "none") +
   facet_grid(member_casual~.) 
 
 
 ```
 
+On weekends, there is no clear difference in the hourly distribution of rides.
 
+### Summing-up the analysis
 
+Our goal was to search for difference between members and casual rides. The most relevant differences we found were the following:
 
+* Members are the main users of our bikes on weekdays. But on weekends, we have more casual users than members riding our bikes.
 
+* The pattern of use during weekdays differs between the two groups. On weekdays, there is a jump in usage around 08:00 a.m.. The same behavior in not observed in casual riders or on weekends.
+
+# Recommendations
+
+1. Expand the time-frame of our analysis. While we analyzed a good amount of data, we have the problem of working with data collected during a pandemic. Give these exceptional circumstances it's possible that our analysis have some biases. So, it would be important to run a similar analysis some months from now, with updated data.
+
+2. We need to better understand our client, while respecting anonymization. Assuming that users must use an app when unlocking the bikes, we could run a digital survey. For example, whenever some user unlock a bike we could question if they are going to use it for commute to work or school, for fun, or other category. We should try to know *why* they are using our bikes, so we can offer beter services.
+
+3. In term of products, we should analyze the possibility of creating a weekend-only membership. Maybe by doing this some people that use our bike for fun, would become members. A weekday-only could also have appeal, but it is dangerous. It ma end-up competing with our current subscription, so I would go down this road only after further analysis.
 
