@@ -99,7 +99,7 @@ library(scales)
 ```
 
 
-```{r Importing the data, echo=TRUE, message=TRUE}
+```{r Importing the data, echo=TRUE}
 
 td_2020_10 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202010-divvy-tripdata.csv")
 td_2020_11 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202011-divvy-tripdata.csv")
@@ -116,9 +116,8 @@ td_2021_09 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202
 
 ```
 
-The function *read_csv* always print some information about the data it just read. If we read them carefully we will see that in 2020 December, the type for the variables in the columns *start_station_id* and *end_station_id* changed. For October and November they are numeric, but later it was encoded as character. 
+In December 2020 the type of the variables *start_station_id* and *end_station_id* changed from numeric to character. As we need that every column have the same type, we will coerce the values for October and November to character.
 
-For keeping consistency we will coerce the values for October and November to characters.
 
 ```{r Coercing to character type}
 td_2020_10 <- td_2020_10 %>% mutate(start_station_id = as.character(start_station_id), end_station_id = as.character(end_station_id))
@@ -400,8 +399,9 @@ trip_data_3 %>%
   
 
 ```
-Checking hour
 
+
+#### Is there any difference between the hour-distribution of rides between the two groups?
 
 ```{r}
 trip_data_3 %>% 
@@ -419,12 +419,48 @@ trip_data_3 %>%
 
 ```
 
+If we analyze this graph we can that there is a small hump close to 08:00 in the the members group. But the same effect is not observable in casual riders.
+
+One possibility is that a considerable amount of member use our bicycles for commute. 
+
+We can further check this if we subset the data in weekdays and weekends. If my hyphoteses is true we will see a considerable hump on weekdays and see no difference at weekends.
 
 
+```{r}
+trip_data_3 %>% 
+  select(day_of_week %in% !c("Saturday", "Sunday")) %>% 
+  group_by(start_hour, member_casual) %>% 
+  summarise(number_of_trips = n()) %>% 
+  ggplot((aes(x = start_hour, y = number_of_trips, color = member_casual))) +
+  geom_point(aes(group= member_casual)) +
+  labs(title = "Rides per hour", subtitle = "Weekdays",
+       y = "Number of trips in thousands", x = "") +
+  scale_x_time(breaks = hms::as.hms(c('00:00:00',"03:00:00","06:00:00","08:00:00",'09:00:00', '12:00:00','15:00:00','18:00:00','21:00:00'))) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank()) +
+  facet_grid(member_casual~.) 
+
+```
 
 
+Now, let's give a look at weekends.
+
+```{r}
+trip_data_3 %>% 
+  select(day_of_week %in% c("Saturday", "Sunday")) %>% 
+  group_by(start_hour, member_casual) %>% 
+  summarise(number_of_trips = n()) %>% 
+  ggplot((aes(x = start_hour, y = number_of_trips, color = member_casual))) +
+  geom_point(aes(group= member_casual)) +
+  labs(title = "Rides per hour", subtitle = "Weekends",
+       y = "Number of trips in thousands", x = "") +
+  scale_x_time(breaks = hms::as.hms(c('00:00:00',"03:00:00","06:00:00","08:00:00",'09:00:00', '12:00:00','15:00:00','18:00:00','21:00:00'))) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank()) +
+  facet_grid(member_casual~.) 
 
 
+```
 
 
 

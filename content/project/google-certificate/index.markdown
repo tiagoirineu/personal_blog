@@ -14,6 +14,11 @@ url_code: ""
 url_pdf: ""
 url_slides: ""
 url_video: ""
+
+output:
+  blogdown::html_page:
+    toc: true
+
 ---
 
 
@@ -100,271 +105,21 @@ library(scales)
 
 ```r
 td_2020_10 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202010-divvy-tripdata.csv")
-```
-
-```
-## Rows: 388653 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (5): ride_id, rideable_type, start_station_name, end_station_name, memb...
-## dbl  (6): start_station_id, end_station_id, start_lat, start_lng, end_lat, e...
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2020_11 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202011-divvy-tripdata.csv")
-```
-
-```
-## Rows: 259716 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (5): ride_id, rideable_type, start_station_name, end_station_name, memb...
-## dbl  (6): start_station_id, end_station_id, start_lat, start_lng, end_lat, e...
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2020_12 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202012-divvy-tripdata.csv")
-```
-
-```
-## Rows: 131573 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_01 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202101-divvy-tripdata.csv")
-```
-
-```
-## Rows: 96834 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_02 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202102-divvy-tripdata.csv")
-```
-
-```
-## Rows: 49622 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_03 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202103-divvy-tripdata.csv")
-```
-
-```
-## Rows: 228496 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_04 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202104-divvy-tripdata.csv")
-```
-
-```
-## Rows: 337230 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_05 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202105-divvy-tripdata.csv")
-```
-
-```
-## Rows: 531633 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_06 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202106-divvy-tripdata.csv")
-```
-
-```
-## Rows: 729595 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_07 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202107-divvy-tripdata.csv")
-```
-
-```
-## Rows: 822410 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_08 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202108-divvy-tripdata.csv")
-```
-
-```
-## Rows: 804352 Columns: 13
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
 td_2021_09 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202109-divvy-tripdata.csv")
 ```
 
-```
-## Rows: 756147 Columns: 13
-```
+In December 2020 the type of the variables *start_station_id* and *end_station_id* changed from numeric to character. As we need that every column have the same type, we will coerce the values for October and November to character.
 
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
-## dbl  (4): start_lat, start_lng, end_lat, end_lng
-## dttm (2): started_at, ended_at
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-The function *read_csv* always print some information about the data it just read. If we read them carefully we will see that in 2020 December, the type for the variables in the columns *start_station_id* and *end_station_id* changed. For October and November they are numeric, but later it was encoded as character. 
-
-For keeping consistency we will coerce the values for October and November to characters.
 
 
 ```r
@@ -558,15 +313,7 @@ trip_data_2 %>%
 
 
 
-For now, I have added all the variables I want. Before going into our analysis, let's inspect the stations name, so we can see if there is anything strange.
-
-We can use the code below to visually inspect the name of all stations. As the output would be too big. I will not share it in the final post. But I did use it to find out which stations should be ignore.
-
-
-```r
-unique(trip_data_2$start_station_name)
-```
-By visually inspecting the stations name, we can see that some stations that seems to be used for bike management. My assumption is that any ride that begins/ends in any of these stations should not  be considered But, before dropping them I want to count it
+There are some stations that in reality are maintenance facilities. We should drop all the rides that begin or end at them. First, I will check how many rides fall in this category. 
 
 
 ```r
@@ -650,7 +397,7 @@ trip_data_3 %>%
   ggtitle("Number of rides per day of week", subtitle = "In the weekdays, members are the typical riders")
 ```
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" />
 Now we see the first type of difference.
 Throughout the weekdays there are more members riding bikes than casual riders.
 In the weekends, there is a jump in the number of casual riders and a small decrease in the number of members riders.
@@ -675,7 +422,7 @@ trip_data_3 %>%
   ggtitle("Members have shorter rides than casual users", subtitle = "Mean ride lenght, by week day")
 ```
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
 
 It is clear that casual riders have longer rides. But I want to get an idea of the distribution. 
 I will use a boxplot for this. 
@@ -688,7 +435,7 @@ trip_data_3 %>%
   geom_boxplot(aes(color = member_casual))
 ```
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
 As we can see, the typical ride for members are similar and shorter than 20 minutes. But, there are many outliers. In general, this seems ok. We are interested in the difference between casual riders and members, and this reinforce our view that the typical member ride is shorter. *Should we offer a subscription mode where people have limited ride time?*
 
 
@@ -733,7 +480,7 @@ trip_data_3 %>%
   geom_bar(aes(fill = member_casual), position = "dodge")
 ```
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" />
 While we can see the member use more classic bikes than casual users. I have my doubts abouot how well we could generalize from here. In the sense of taking an action.We could rum a survey about this
 
 
@@ -750,9 +497,10 @@ trip_data_3 %>%
   theme(axis.text.x = element_text(angle = 90), legend.title = element_blank())
 ```
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" />
-Checking hour
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
 
+
+#### Is there any difference between the hour-distribution of rides between the two groups?
 
 
 ```r
@@ -769,17 +517,73 @@ trip_data_3 %>%
   facet_grid(member_casual~.) 
 ```
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/Hourly distribution of rides-1.png" width="672" />
+
+If we analyze this graph we can that there is a small hump close to 08:00 in the the members group. But the same effect is not observable in casual riders.
+
+One possibility is that a considerable amount of member use our bicycles for commute. 
+
+We can further check this if we subset the data on weekdays and weekends. If my hyphoteses is true we will see a considerable hump on weekdays and see no difference at weekends.
+
+
+First, let's plot the hourly distribution of rides for weekdays.
+
+
+```r
+trip_data_3 %>% 
+  filter(!day_of_week %in% c("Saturday", "Sunday")) %>% 
+  group_by(start_hour, member_casual) %>% 
+  summarise(number_of_trips = n()) %>% 
+  ggplot((aes(x = start_hour, y = number_of_trips, color = member_casual))) +
+  geom_point(aes(group= member_casual)) +
+  labs(title = "Members rides are bi-modal on weekdays.\nThere is a hump around 08:00 a.m.", subtitle = "Distribution of rides throughout the day - Weekdays only",
+       y = "Number of trips in thousands", x = "") +
+  scale_x_time(breaks = hms::as.hms(c('00:00:00',"03:00:00","06:00:00","08:00:00",'09:00:00', '12:00:00','15:00:00','18:00:00','21:00:00'))) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank(), legend.position = "none") +
+  facet_grid(member_casual~.) 
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/Weekday rides-1.png" width="672" />
+
+As we can see in the plot above, the hump around 08:00 is more pronounced when we focus on weekdays. This reinforce the idea that many members are using our bikes for commute, while the same does not seem to true for casual riders.
+
+For concluding our analysis about the hourly distribution of rides, let's plot the data only for weekends.
 
 
 
+```r
+ trip_data_3 %>% 
+  filter(day_of_week %in% c("Saturday", "Sunday")) %>% 
+  group_by(start_hour, member_casual) %>% 
+  summarise(number_of_trips = n()) %>% 
+  ggplot((aes(x = start_hour, y = number_of_trips, color = member_casual))) +
+  geom_point(aes(group= member_casual)) +
+  labs(title = "On weekends the distribution of rides are similar", subtitle = "Distribution of rides throughout the day - Weekend only",
+       y = "Number of trips in thousands", x = "") +
+  scale_x_time(breaks = hms::as.hms(c('00:00:00',"03:00:00","06:00:00","08:00:00",'09:00:00', '12:00:00','15:00:00','18:00:00','21:00:00'))) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank(), legend.position = "none") +
+  facet_grid(member_casual~.) 
+```
 
+<img src="{{< blogdown/postref >}}index_files/figure-html/Weekend rides-1.png" width="672" />
 
+On weekends, there is no clear difference in the hourly distribution of rides.
 
+### Summing-up the analysis
 
+Our goal was to search for difference between members and casual rides. The most relevant differences we found were the following:
 
+* Members are the main users of our bikes on weekdays. But on weekends, we have more casual users than members riding our bikes.
 
+* The pattern of use during weekdays differs between the two groups. On weekdays, there is a jump in usage around 08:00 a.m.. The same behavior in not observed in casual riders or on weekends.
 
+# Recommendations
 
+1. Expand the time-frame of our analysis. While we analyzed a good amount of data, we have the problem of working with data collected during a pandemic. Give these exceptional circumstances it's possible that our analysis have some biases. So, it would be important to run a similar analysis some months from now, with updated data.
 
+2. We need to better understand our client, while respecting anonymization. Assuming that users must use an app when unlocking the bikes, we could run a digital survey. For example, whenever some user unlock a bike we could question if they are going to use it for commute to work or school, for fun, or other category. We should try to know *why* they are using our bikes, so we can offer beter services.
+
+3. In term of products, we should analyze the possibility of creating a weekend-only membership. Maybe by doing this some people that use our bike for fun, would become members. A weekday-only could also have appeal, but it is dangerous. It ma end-up competing with our current subscription, so I would go down this road only after further analysis.
 
