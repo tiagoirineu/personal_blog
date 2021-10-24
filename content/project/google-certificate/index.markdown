@@ -93,6 +93,7 @@ We first import the data for the 12 months we are going to analyze:
 ```r
 library(tidyverse)
 library(lubridate) # For working with dates
+library(scales)
 ```
 
 
@@ -600,6 +601,175 @@ We imported the relevant dataframes. Combined them in on unique data frame. Crea
 
 
 
+
+## Analysis
+
+
+First, I want to see if the fact we dropped some rows changed the proportions.
+
+
+```r
+n = length(trip_data_2$member_casual)  # Gets the total number of observations
+
+trip_data_3 %>% 
+  group_by(member_casual) %>% 
+  summarise(Proportion = n()/n)  # The function n() counts the number of elements for each group.
+```
+
+```
+## # A tibble: 2 x 2
+##   member_casual Proportion
+##   <chr>              <dbl>
+## 1 casual             0.459
+## 2 member             0.541
+```
+
+
+No relevant change. What makes sense given how irrelevant the data we dropped seems to be.
+
+
+```r
+table(trip_data_3$day_of_week)
+```
+
+```
+## 
+##    Monday   Tuesday Wednesday  Thursday    Friday  Saturday    Sunday 
+##    641781    657820    679456    694608    744041    923355    789826
+```
+As we can see, there are more rides in the weekends than in the weekdays. 
+Let's see how this break down between members and casual riders.
+
+
+```r
+trip_data_3 %>% 
+  ggplot(aes(x = day_of_week)) + 
+  geom_bar(aes(fill = member_casual), position = "dodge") +
+  scale_y_continuous(labels = comma) +
+  xlab("Number of rides") +
+  ggtitle("Number of rides per day of week", subtitle = "In the weekdays, members are the typical riders")
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+Now we see the first type of difference.
+Throughout the weekdays there are more members riding bikes than casual riders.
+In the weekends, there is a jump in the number of casual riders and a small decrease in the number of members riders.
+
+*A possible action here would be to create different kind of memberships. For example, maybe there is a demand for weekend-only memberships. And in contrast, it could exist demand for a week-only membership.* 
+
+By this graph, I believe the company should run two surveys.
+* For people that are using in the weekdays, are they using the bikes for work commute?
+* For casual weekend users, would they be interested in a weekend-only membership?
+
+
+
+```r
+trip_data_3 %>%
+  group_by(day_of_week, member_casual) %>% 
+  summarise(mean_ride = mean(ride_lenght)) %>% 
+  ggplot(aes(x = day_of_week, y = mean_ride)) +
+  geom_col(aes(fill = member_casual), position = "dodge")+
+  ylab("mean ride lenght in minutes") + 
+  xlab("") +
+  theme(legend.title = element_blank()) +
+  ggtitle("Members have shorter rides than casual users", subtitle = "Mean ride lenght, by week day")
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+
+It is clear that casual riders have longer rides. But I want to get an idea of the distribution. 
+I will use a boxplot for this. 
+
+
+```r
+trip_data_3 %>% 
+  ggplot(aes(x = day_of_week, y = ride_lenght)) +
+  ylim(0,60) +
+  geom_boxplot(aes(color = member_casual))
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+As we can see, the typical ride for members are similar and shorter than 20 minutes. But, there are many outliers. In general, this seems ok. We are interested in the difference between casual riders and members, and this reinforce our view that the typical member ride is shorter. *Should we offer a subscription mode where people have limited ride time?*
+
+
+We have a clear picture here. Members have shorter rides than casual users. 
+
+Now, let's see if there is any relationship between membership and the most used ride able type.
+
+
+```r
+table(trip_data_3$rideable_type)
+```
+
+```
+## 
+##  classic_bike   docked_bike electric_bike 
+##       2750382        674753       1705752
+```
+
+
+```r
+trip_data_3 %>% 
+  group_by(member_casual, rideable_type) %>% 
+  summarise(n())
+```
+
+```
+## # A tibble: 6 x 3
+## # Groups:   member_casual [2]
+##   member_casual rideable_type   `n()`
+##   <chr>         <chr>           <int>
+## 1 casual        classic_bike  1120545
+## 2 casual        docked_bike    406920
+## 3 casual        electric_bike  828764
+## 4 member        classic_bike  1629837
+## 5 member        docked_bike    267833
+## 6 member        electric_bike  876988
+```
+
+```r
+trip_data_3 %>% 
+  ggplot(aes(x = rideable_type)) + 
+  geom_bar(aes(fill = member_casual), position = "dodge")
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+While we can see the member use more classic bikes than casual users. I have my doubts abouot how well we could generalize from here. In the sense of taking an action.We could rum a survey about this
+
+
+```r
+trip_data_3 %>% 
+  group_by(month, member_casual) %>% 
+  summarise(number_of_trips = n()/1000) %>% 
+  ggplot((aes(x = month, y = number_of_trips, color = member_casual))) +
+  geom_line(aes(group= member_casual)) +
+  geom_point(size = 2) +
+  labs(title = "Number of rides per month", subtitle = "Data from 2020-10 to 2021-09",
+       y = "Number of trips in thousands", x = "") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank())
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+Checking hour
+
+
+
+```r
+trip_data_3 %>% 
+  group_by(start_hour, member_casual) %>% 
+  summarise(number_of_trips = n()) %>% 
+  ggplot((aes(x = start_hour, y = number_of_trips, color = member_casual))) +
+  geom_point(aes(group= member_casual)) +
+  labs(title = "Rides per hour", subtitle = "24-hour range",
+       y = "Number of trips in thousands", x = "") +
+  scale_x_time(breaks = hms::as.hms(c('00:00:00',"03:00:00","06:00:00","08:00:00",'09:00:00', '12:00:00','15:00:00','18:00:00','21:00:00'))) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), legend.title = element_blank()) +
+  facet_grid(member_casual~.) 
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" />
 
 
 
