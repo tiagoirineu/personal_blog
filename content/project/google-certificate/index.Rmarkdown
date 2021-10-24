@@ -26,6 +26,8 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE, echo = TRUE)
 
 ```
 
+{{< toc >}}
+
 # Introduction
 
 This is my case study for data analysis Google Certificate. I divide this in two parts.
@@ -41,7 +43,7 @@ program and have chosen Cyclistic for their mobility needs.
 
 As such, our assignment is to answer the following question: **How do annual members and casual riders use Cyclistic bikes differently?**
 
-## Deliverables
+# Deliverables
 
 Our analysis must create the following outcomes to be considered successful. 
 
@@ -63,7 +65,7 @@ Outline of our discussion:
 4. Summary of findings and recommendations.
 5. Detailed documentation of data manipulation.
 
-## Ask - Statement of the business task
+# Business Task
 
 Cyclist has three different pricing plans: single-ride passes, full-day passes, and annual memberships.
 Our task is to identify the differences between annual members and the other two customer groups, that we will define as casual riders.
@@ -88,7 +90,7 @@ While I believe the data is good enough, it does have some limitations such as:
 These question must be addressed and we will further discuss them in the recommendation section. Regardless of these points, I do think that the data we have is good enough for creating a useful analysis for the company.
 
 
-## Preparing and processing the data
+# Preparing and processing the data
 
 All our data work, from preparing the data to the visualizations, will be done using R and RStudio. In particular, I will use the tidyverse to wrangle the data, ggplot2 for creating the visualizations, and blogdown for creating the site where this analysis is being shared. R all the way down.
 
@@ -288,9 +290,7 @@ This finishes our data processing efforts.
 We imported the relevant dataframes. Combined them in on unique data frame. Created new variables that we will use to explore the difference between casual riders and members. We also dropped some rows that had some wrong data stored.
 
 
-
-
-## Analysis
+# Analysis
 
 
 First, I want to see if the fact we dropped some rows changed the proportions.
@@ -466,7 +466,7 @@ For concluding our analysis about the hourly distribution of rides, let's plot t
 
 On weekends, there is no clear difference in the hourly distribution of rides.
 
-### Summing-up the analysis
+## Summing-up the analysis
 
 Our goal was to search for difference between members and casual rides. The most relevant differences we found were the following:
 
