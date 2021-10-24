@@ -99,20 +99,269 @@ library(lubridate) # For working with dates
 
 ```r
 td_2020_10 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202010-divvy-tripdata.csv")
+```
+
+```
+## Rows: 388653 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (5): ride_id, rideable_type, start_station_name, end_station_name, memb...
+## dbl  (6): start_station_id, end_station_id, start_lat, start_lng, end_lat, e...
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2020_11 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202011-divvy-tripdata.csv")
+```
+
+```
+## Rows: 259716 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (5): ride_id, rideable_type, start_station_name, end_station_name, memb...
+## dbl  (6): start_station_id, end_station_id, start_lat, start_lng, end_lat, e...
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2020_12 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202012-divvy-tripdata.csv")
+```
+
+```
+## Rows: 131573 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_01 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202101-divvy-tripdata.csv")
+```
+
+```
+## Rows: 96834 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_02 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202102-divvy-tripdata.csv")
+```
+
+```
+## Rows: 49622 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_03 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202103-divvy-tripdata.csv")
+```
+
+```
+## Rows: 228496 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_04 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202104-divvy-tripdata.csv")
+```
+
+```
+## Rows: 337230 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_05 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202105-divvy-tripdata.csv")
+```
+
+```
+## Rows: 531633 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_06 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202106-divvy-tripdata.csv")
+```
+
+```
+## Rows: 729595 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_07 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202107-divvy-tripdata.csv")
+```
+
+```
+## Rows: 822410 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_08 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202108-divvy-tripdata.csv")
+```
+
+```
+## Rows: 804352 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 td_2021_09 <-  read_csv("C:/Users/tiago/OneDrive/google_certificate/raw_data/202109-divvy-tripdata.csv")
 ```
 
-the function *read_csv* always print some information about the data it just read. If we read them carefully we will see that in 2020 December, the type for the variables in the columns *start_station_id* and *end_station_id* changed. For October and November they are numeric, but later it was encoded as character. 
+```
+## Rows: 756147 Columns: 13
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (7): ride_id, rideable_type, start_station_name, start_station_id, end_...
+## dbl  (4): start_lat, start_lng, end_lat, end_lng
+## dttm (2): started_at, ended_at
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+The function *read_csv* always print some information about the data it just read. If we read them carefully we will see that in 2020 December, the type for the variables in the columns *start_station_id* and *end_station_id* changed. For October and November they are numeric, but later it was encoded as character. 
 
 For keeping consistency we will coerce the values for October and November to characters.
 
@@ -209,7 +458,10 @@ trip_data %>%
 ##   <drtn>        <drtn>          <drtn>        
 ## 1 1237.408 secs -1742998 secs   3356649 secs
 ```
-Unless somebody was the Flash and could go back in time, this info show to us that there are some erros in the data. As min_ride is negative, it is telling us that there are negative entries. Let's find out how many entries fall in this situation.
+Unless somebody was the Flash and could go back in time, this info show to us that there are some errors in the data. As min_ride is negative, it is telling us that there are negative entries. I also don't like the fact that our lenght ride is in seconds. So, let's first analyze these rides with negative length and after that we will transform it units to minutes.
+
+
+Let's first check how many observations we have with this error.
 
 
 ```r
@@ -219,7 +471,7 @@ sum(trip_data$ride_lenght <=0) #By summing a logical vector you get the number o
 ```
 ## [1] 3762
 ```
-In a dataset with more that 5 mln. observations, it seems ok to me to drop less than 4.000 entries. 
+In a dataframe with more that 5 mln. observations, it seems ok to me to drop less than 4.000 entries. 
 This has potential for creating a problem, if the factor that explain the mistake is one we are interested in. But it does not seems to be the case, so let's drop these observation.
 
 
@@ -234,7 +486,117 @@ trip_data_2 <- trip_data %>%
 ```
 
 
+```r
+trip_data_2$ride_lenght = trip_data_2$ride_lenght/60
+```
 
+We are done treating the *ride_lenght* variable.
+Now, let's create a variable for weekdays. 
+
+We can use the *started_at* variable for extracting which day of the week the ride took place. We can use this variable later to check if there any day preference difference between casual and members.
+
+
+We use the code below to create a variable *day_of_week*.
+As my system is in Brazilian Portuguese, I have to set its language to English so I can get the weekdays with the name I expect.
+
+
+```r
+Sys.setlocale("LC_TIME", "English")  # This is necessary so I get dates in English.
+```
+
+```
+## [1] "English_United States.1252"
+```
+
+```r
+trip_data_2 <- trip_data_2 %>% 
+  mutate(day_of_week = weekdays(started_at)) %>% 
+  mutate( day_of_week = factor(day_of_week, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")))
+
+
+unique(trip_data_2$day_of_week) 
+```
+
+```
+## [1] Saturday  Thursday  Wednesday Sunday    Monday    Tuesday   Friday   
+## Levels: Monday Tuesday Wednesday Thursday Friday Saturday Sunday
+```
+
+I use the code below to add a month variable to our dataframe. I will use this later to check any seasonality in the rides.
+
+
+```r
+trip_data_2 <- trip_data_2 %>% 
+  mutate(month = format(as.Date(started_at), "%Y-%m"))
+
+unique(trip_data_2$month)
+```
+
+```
+##  [1] "2020-10" "2020-11" "2020-12" "2021-01" "2021-02" "2021-03" "2021-04"
+##  [8] "2021-05" "2021-06" "2021-07" "2021-08" "2021-09"
+```
+
+I also want to create a hour variable, so I can see the hour-distribution of the rides
+
+
+```r
+trip_data_2 <- trip_data_2 %>% 
+  mutate(start_hour = hms:: hms(second(started_at), minute(started_at), hour(started_at)))
+
+trip_data_2 %>% 
+  summarise(min(start_hour), mean(start_hour), max(start_hour))
+```
+
+```
+## # A tibble: 1 x 3
+##   `min(start_hour)` `mean(start_hour)` `max(start_hour)`
+##   <drtn>            <drtn>             <drtn>           
+## 1 0 secs            53242.62 secs      86399 secs
+```
+
+
+
+For now, I have added all the variables I want. Before going into our analysis, let's inspect the stations name, so we can see if there is anything strange.
+
+We can use the code below to visually inspect the name of all stations. As the output would be too big. I will not share it in the final post. But I did use it to find out which stations should be ignore.
+
+
+```r
+unique(trip_data_2$start_station_name)
+```
+By visually inspecting the stations name, we can see that some stations that seems to be used for bike management. My assumption is that any ride that begins/ends in any of these stations should not  be considered But, before dropping them I want to count it
+
+
+```r
+rows_to_drop <- c("WATSON TESTING - DIVVY","Base - 2132 W Hubbard Warehouse","DIVVY CASSETTE REPAIR MOBILE STATION","HUBBARD ST BIKE CHECKING (LBS-WH-TEST)")
+
+sum(trip_data_2$end_station_name %in% rows_to_drop)
+```
+
+```
+## [1] 1283
+```
+
+```r
+sum(trip_data_2$start_station_name %in% rows_to_drop)
+```
+
+```
+## [1] 1064
+```
+I will drop these rows because they are not genuine rides. Besides that, it does not seem reasonable to assume that it will have any impact.
+
+
+
+```r
+trip_data_3 <- trip_data_2 %>% 
+  filter(!(end_station_name %in% rows_to_drop | start_station_name %in% rows_to_drop))
+```
+
+This finishes our data processing efforts. 
+
+We imported the relevant dataframes. Combined them in on unique data frame. Created new variables that we will use to explore the difference between casual riders and members. We also dropped some rows that had some wrong data stored.
 
 
 
