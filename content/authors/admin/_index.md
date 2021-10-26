@@ -1,5 +1,5 @@
 ---
-bio: My research interests include data analysis, probability, economics, and history.
+bio: My interests include data analysis, probability, economics, and Risk.
  
 education:
   courses:
@@ -41,7 +41,8 @@ title: Tiago Irineu
 
 Hello, I am Tiago Irineu, the guy in the picture. Greetings from Brazil.
 
-I'm a master in Economics and I love to study and try to understand how society works. My original goal was to get a PhD to become a researcher and professor. But, after I completed my master's studies I had to change plans and begin to work. Regardless of this, I want to be a life-long learner, and in this site I will share what I am currently studying. Right now my focus is learning data analysis and visualization using R. After mastering this, I will move to Python and Machine Learning.
+I'm a master in Economics and I love to study and try to understand how society works. My original goal was to get a PhD to become a researcher and professor. But, after I completed my master's studies I had to change plans and begin to work. Regardless of this, I want to be a life-long learner, and in this site I will share what I am currently studying.
 
-In the long term I hope to be working in a quantitative position where I can apply these skills and critical thinking to real-world problems. In the long term, I hope to create something that positively impact the life of others. For me, to help people to grow is our most important endeavor.
+Right now my focus is learning data analysis and visualization using R. After mastering this, I will move to Python and Machine Learning. I hope to apply these tools in finance and economic analysis. 
+
 
