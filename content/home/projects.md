@@ -27,8 +27,6 @@ content:
   filter_button:
   - name: All
     tag: '*'
-  - name: Deep Learning
-    tag: Deep Learning
   - name: Data Analysis
     tag: data analysis
   - name: Other
