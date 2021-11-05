@@ -1,0 +1,124 @@
+---
+title: Probability
+author: Tiago Irineu
+date: '2021-10-28'
+slug: probability
+categories: []
+tags: [R, probability, statistics]
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-10-28T06:51:28-03:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: yes  #changed here. original is no
+projects: []
+---
+
+In this post I summarise the chapter ["Probability"](https://rafalab.github.io/dsbook/probability.html). I also share the solution for every exercise in the chapter.
+
+*Through the chapter, my personal comments will be written in italic, so you can differentiate my perspective from the original material.*
+
+
+### Probability as relative frequency
+
+A more tangible way to think about the probability of an event is as the proportion of times the event occurs when we repeat the experiment an infinite number of times, independently, and under the same conditions.
+
+*Probability has three different definitions. The classic, the frequentist, and the bayesian. Before publishing this post, _I will create a post discussing these definitions*
+
+
+* We use the notation $Pr(A)$ to denote the probability of event $A$ happening.
+
+* The sum of the probability of all possible events of a given phenomen is 1.
+
+* If $P(B)=0$ then B is impossible. If $P(B)$ = 1, then B is certain.
+
+## Monte Carlo simulations for categorical data
+
+
+```{r Creating urn}
+beads <- rep(c("red", "blue"), times = c(2,3)) # Creates a vector with 2 red and 3 blue
+
+beads
+```
+```{r picking a bead at random}
+
+sample(beads, 1)
+```
+### Our first Monte Carlo simulation
+
+*The code below an example of a monte carlo simulation. It picks an element of the vector bead ten thousand times, so we can arrive at the core of the system, but through simulation
+
+```{r}
+
+B <- 10000
+events <- replicate(B, sample(beads, 1)) 
+
+tab <-  table(events) #table gives the count of each particular event
+tab 
+```
+
+```{r}
+prop.table(tab)
+```
+
+### Some probability definitions
+
+
+* If two events, $A$ and $B$ are independent, we have:
+
+$$ Pr(A|B) = Pr(A) $$
+*The fact that B happened does not affect the probability of A happening.*
+
+#### Multiplication rule
+
+$$ Pr(A \ and\ B) = Pr(A)Pr(B|A) $$
+
+Reorganizing this formula we get the formula for conditional probability
+
+$$ Pr(B|A) = \frac{Pr(A\ and\ B)}{Pr(A)} $$
+
+
+**Multiplication rule for multiple events**
+
+$$ Pr(A\ and\ B\ and\ C) = Pr(A)Pr(B|A)Pr(C|A\ and\ B) $$
+
+
+**** Addition rule
+
+$$ Pr(A\ or\ B)=\ Pr(A)+Pr(B)- Pr(A\ and\ B) $$
+
+#### Creating a deck of cards
+
+```{r Creating a deck of cards}
+suits <- c("Diamonds", "Clubs", "Hearts", "Spades")
+
+numbers <- c("Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King")
+
+## Below, we create the deck.
+# expand.grid create all possible pairs using suits and numbers
+# paste() concatenates the pairs into one string
+
+deck <- expand.grid(number = numbers, suit = suits)
+deck <- paste(deck$number, deck$suit)
+
+```
+
+Checking if kings have the expected probability
+
+```{r}
+kings <- paste("King", suits)
+mean(deck%in% kings) == 1/13
+```
+
+
+
+
+
+
+
+
+
+
