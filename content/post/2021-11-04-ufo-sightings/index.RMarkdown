@@ -9,7 +9,7 @@ subtitle: ''
 summary: ''
 authors: []
 lastmod: '2021-11-04T06:30:06-03:00'
-featured: no
+featured: 
 image:
   caption: ''
   focal_point: ''
@@ -114,3 +114,66 @@ ufo_sightings %>%
     geom_line()
 ```
 Now we can see how much the sightings suffered variation until the 1990's, when it really changes the behavior. This would say that there is something that change in the 1990's. Maybe the ETs discovered our adress.
+
+### What are the most commonly seen shapes
+
+When I thing in UFOs, I think about a disc. But was it always like that? I don't know. Let's let the data tell us.
+
+
+```{r}
+n_distinct(ufo_sightings$shape)
+```
+Oj, there are 30 different shapes. Let's see how they are divided between categories.
+
+
+```{r}
+ufo_sightings %>% 
+  group_by(shape) %>% 
+  summarise(n())
+```
+There are many different formats. But there are many with few observation. So I will drop any with lest that 10 views. Those guys are just no regular visitors. There is also the groups of unknown, NAs, and others. These I will combine as "unknown" because I have no idea between which people were selection, for pick another.
+
+```{r}
+ufo_sightings$shape[is.na(ufo_sightings$shape)] <- "unknown"
+ufo_sightings$shape[ufo_sightings$shape == "other"] <- "unknown"
+
+ufo_sightings %>% 
+  group_by(shape) %>% 
+  summarise(n())
+
+```
+now, let's drop those types with few appearances. We only want regular visitors.
+
+
+```{r}
+
+shapes_to_drop <- ufo_sightings %>% 
+  group_by(shape) %>% 
+  summarise(views = n()) %>% 
+  filter(views <= 10) %>% 
+  select(shape)
+
+shapes_to_drop
+
+```
+```{r Droping the rows}
+
+# This code filter all values in shape, that are different from those we #declared
+ufo_2 <- ufo_sightings %>% 
+  filter(!shape %in% c("changed", "crescent", "delta", "dome", "flare",
+                      "hexagon", "pyramid", "round"))
+```
+
+```{r Checking the results}
+
+ufo_2 %>% 
+  group_by(shape) %>% 
+  summarise(n = n()) %>% 
+  arrange(n) %>% 
+  ggplot() +
+  geom_col(aes(shape, n, fill =shape)) +
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+It's possible to see that there are many shapes that were seen. Interesting enough, while the usually depiction is of a disk, most sightings can not point out a specific format or see a light. Triangles and fireballs also seen a lot. That good enough for now.
