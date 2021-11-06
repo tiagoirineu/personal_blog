@@ -1,15 +1,15 @@
 ---
-title: UFO Sightings
+title: "UFO Sightings"
 author: Tiago Irineu
 date: '2021-11-04'
-slug: indexR
+slug: ufo-sightings
 categories: [data analytics]
 tags: [R]
 subtitle: ''
 summary: ''
 authors: []
 lastmod: '2021-11-04T06:30:06-03:00'
-featured: 
+featured: no
 image:
   caption: ''
   focal_point: ''
