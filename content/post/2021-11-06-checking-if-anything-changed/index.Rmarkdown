@@ -1,5 +1,5 @@
 ---
-title: UFO Sightings -
+title: UFO Sightings
 author: Tiago Irineu
 date: '2021-11-06'
 slug: checking-if-anything-changed
@@ -188,4 +188,22 @@ ufo_2 %>%
 ```
 
 Many different shapes were reported. But, if you ignore the unknown type, 
+
+```{r top 7 sightings shapes}
+top_8 <- c("light", "unknown", "circular", "triangle", "fireball",
+           "sphere", "oval","cylinder")
+
+ufo_top_8 <- ufo_2 %>% 
+    filter(shape %in% top_8)
+
+
+ufo_top_8 %>% 
+  group_by(shape) %>% 
+  summarise(n = n()) %>% 
+  ggplot(aes(reorder(shape, -n), n, fill =shape)) + #The reoder function reorder the x axis, by using the n variable. The - implies descending order
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90))
+
+
+```
 

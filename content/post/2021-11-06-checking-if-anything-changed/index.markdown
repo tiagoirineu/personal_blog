@@ -1,5 +1,5 @@
 ---
-title: UFO Sightings -
+title: UFO Sightings
 author: Tiago Irineu
 date: '2021-11-06'
 slug: checking-if-anything-changed
@@ -269,26 +269,38 @@ There are many different formats. But there are many with few observation. So I 
 ufo_sightings$shape[is.na(ufo_sightings$shape)] <- "unknown"
 ufo_sightings$shape[ufo_sightings$shape == "other"] <- "unknown"
 
+# Circles and disk are two closely reated shapes. I will recode them as circular shaped objects
+ufo_sightings$shape[ufo_sightings$shape == "disk"] <- "circular"
+ufo_sightings$shape[ufo_sightings$shape == "circle"] <- "circular"
+
+# We also have oval and egg
+
+ufo_sightings$shape[ufo_sightings$shape == "egg"] <- "oval"
+
+#
+
+ufo_sightings$shape[ufo_sightings$shape == "cigar"] <- "cylinder"
+
 ufo_sightings %>% 
   group_by(shape) %>% 
   summarise(n())
 ```
 
 ```
-## # A tibble: 28 x 2
+## # A tibble: 25 x 2
 ##    shape    `n()`
 ##    <chr>    <int>
 ##  1 changed      1
 ##  2 changing  1962
 ##  3 chevron    952
-##  4 cigar     2057
-##  5 circle    7608
-##  6 cone       316
-##  7 crescent     2
-##  8 cross      233
-##  9 cylinder  1283
-## 10 delta        7
-## # ... with 18 more rows
+##  4 circular 12821
+##  5 cone       316
+##  6 crescent     2
+##  7 cross      233
+##  8 cylinder  3340
+##  9 delta        7
+## 10 diamond   1178
+## # ... with 15 more rows
 ```
 now, let's drop those types with few appearances. We only want regular visitors.
 
@@ -330,13 +342,31 @@ ufo_2 <- ufo_sightings %>%
 ufo_2 %>% 
   group_by(shape) %>% 
   summarise(n = n()) %>% 
-  arrange(n) %>% 
-  ggplot() +
-  geom_col(aes(shape, n, fill =shape)) +
+  ggplot(aes(reorder(shape, -n), n, fill =shape)) + #The reoder function reorder the x axis, by using the n variable. The - implies descending order
+  geom_col() +
   theme(axis.text.x = element_text(angle = 90))
 ```
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/Checking the results-1.png" width="672" />
 
-It's possible to see that there are many shapes that were seen. Interesting enough, while the usually depiction is of a disk, most sightings can not point out a specific format or see a light. Triangles and fireballs also seen a lot. That good enough for now.
+Many different shapes were reported. But, if you ignore the unknown type, 
+
+
+```r
+top_8 <- c("light", "unknown", "circular", "triangle", "fireball",
+           "sphere", "oval","cylinder")
+
+ufo_top_8 <- ufo_2 %>% 
+    filter(shape %in% top_8)
+
+
+ufo_top_8 %>% 
+  group_by(shape) %>% 
+  summarise(n = n()) %>% 
+  ggplot(aes(reorder(shape, -n), n, fill =shape)) + #The reoder function reorder the x axis, by using the n variable. The - implies descending order
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/top 7 sightings shapes-1.png" width="672" />
 
