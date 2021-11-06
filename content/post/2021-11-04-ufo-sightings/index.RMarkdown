@@ -16,7 +16,9 @@ image:
   preview_only: no
 projects: []
 ---
-
+```{r, echo=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+```
 ## UFO Sightings
 
 I'm working in this projects with Kristy and Adel. Both are coleagues from the Google Data Analytics Certificate. The idea of working together in a data project came from Kristy.
