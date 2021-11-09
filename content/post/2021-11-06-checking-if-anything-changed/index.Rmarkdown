@@ -17,7 +17,10 @@ image:
 projects: []
 ---
 
-## UFO Sightings
+![screen reader text](believe.jpg)
+
+
+## Data Analysis Project - UFO sightings
 
 I'm working in this projects with Kristy and Adel. Both are coleagues from the Google Data Analytics Certificate. The idea of working together in a data project came from Kristy.
 
@@ -206,4 +209,127 @@ ufo_top_8 %>%
 
 
 ```
+___ 
 
+Let's analyze now in what moment the sightings are happening..
+I would say that they are probably happenning at night, but let's check.
+
+
+```{r}
+ufo_2 <- ufo_2 %>% 
+    mutate(datetime = round_date(datetime, "hour")) %>% 
+    mutate(sighting_time = hms::: hms(second(datetime), minute(datetime), hour(datetime)))
+
+str(ufo_2)
+```
+Now, let's make a plot
+
+```{r}
+ufo_2 %>% 
+    group_by(sighting_time) %>% 
+    summarise(n_sightings =n()) %>% 
+    ggplot() +
+    geom_step(aes(x = sighting_time, y = n_sightings), color = "blue") +
+    theme_minimal()
+```
+While this plot is not the most beautiful in the world, it does make it clear that there are more sightings at night, peaking after 08:00 p.m. and before 01:00 a.m.
+
+### Local of sightings
+
+First, let's check from which countries these sightings are coming from.
+
+```{r}
+table(ufo_2$country)
+```
+As we can see, most of the data comes from the US.
+We also have a column called state. I believe that this column inputs the data form sighting in the US. 
+
+I will create a US data set, and then use it to investigate.
+
+```{r}
+usa_ufo <- ufo_2 %>% 
+    filter(country == "us")
+
+table(usa_ufo$country)
+```
+As you can see, now we have only the us data. Let's see which state has more sightings recorded.
+
+### Which american state is the favorite destination for UFOs?
+
+First, let's see which states have more recorded UFO sightings.
+
+```{r}
+usa_ufo %>% 
+    group_by(state) %>% 
+    summarise(n_sightings = n()) %>% 
+    ggplot(aes(x= reorder(state, n_sightings), n_sightings)) +
+    geom_col() +
+    coord_flip() +
+    geom_text(aes(label = state), hjust = -0.5)+
+    theme_light()
+```
+While we can see that California where there are more sighting recorded, this is just not a beautiful plot. There are too many columns. So, let's focus on the states that have more sightings than the median.
+
+```{r}
+usa_ufo %>% 
+    group_by(state) %>% 
+    summarise(n_sightings = n()) %>% 
+    filter(n_sightings >= median(n_sightings)) %>%
+    ggplot(aes(x= reorder(state, n_sightings), n_sightings)) +
+    geom_col() +
+    coord_flip() +
+    geom_text(aes(label = state), hjust = -0.5)+
+    theme_light()
+```
+
+In raw numbers it's clear that most of the sightings are happening in California. The problem with this is that California is the most populated state in the U.S., therefore it's expected that there will be more recordings there. 
+To account for this fact, we need data on state population. What is not available in our current dataset.
+
+So, I will add [US Census data](https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-state-total.html) so we can consider this. I will also need a support data set with the link between state names and codes. This data is available [here](https://worldpopulationreview.com/states/state-abbreviations).
+
+
+```{r Adding state data}
+
+state_names <- read_csv("C:/Users/tiago/OneDrive/datasets/state_names.csv")
+states_population <- read_csv("C:/Users/tiago/OneDrive/datasets/states_populations.csv")
+
+```
+Now, we will work a bit with these datasets, keeping just the columns that we need.
+
+```{r Combining the state data to its respective code}
+states <- state_names %>% 
+    select(State, Code) %>% 
+    clean_names()
+
+population <- states_population %>% 
+    filter(STATE != "00") %>%               #drop data not related to states
+    select(STATE, NAME, CENSUS2010POP) %>% 
+    clean_names()                        # select the 2010 Census population
+
+states_pop <- left_join(states, population, by = c("state" = "name")) %>% 
+    select(code, census2010pop)
+states_pop$code <- tolower(states_pop$code)
+```
+
+Now, I have the state population in 2010. I can use it to create a dataset with sightings per 100.000 inhabitants.
+
+* Combine the population data with a summarized dataset
+* Create a sightings rate
+
+```{r Sightings per 100.000 people}
+
+usa_ufo %>% 
+    group_by(state) %>% 
+    summarise(n_sightings = n()) %>% 
+    left_join(states_pop, by = c("state" = "code")) %>% 
+    mutate(sightings_rate = (n_sightings/census2010pop)*100000) %>% 
+    filter(n_sightings > 500) %>% 
+    ggplot(aes(reorder(state, sightings_rate), sightings_rate)) +
+    geom_col() +
+    coord_flip() +
+    geom_text(aes(label = state), hjust = -0.5)+
+    theme_minimal()
+```
+
+Whe we consider the state populations we see that the fact that California, Texas, and Florida are the states with more sightings are driven mainly due to population size. 
+The state that are really being visited a lot, is Washington. **Evidence that the americans are being governed by reptilians.**
