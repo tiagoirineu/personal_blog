@@ -2,7 +2,7 @@
 title: UFO Sightings
 author: Tiago Irineu
 date: '2021-11-06'
-slug: checking-if-anything-changed
+slug: ufo-sightings
 categories: []
 tags: [R]
 subtitle: ''
