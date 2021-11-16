@@ -20,9 +20,7 @@ projects: []
 ![screen reader text](believe.jpg)
 
 
-## Data Analysis Project - UFO sightings
 
-I'm working in this projects with Kristy and Adel. Both are coleagues from the Google Data Analytics Certificate. The idea of working together in a data project came from Kristy.
 
 ## Introduction
 
@@ -30,7 +28,9 @@ There are few things that are shared with all cultures and in all different time
 
 Within the group that answer No to the previous question, there is a subgroup that believes not only that there is extraterrestrial life, but also that we are regularly visited by the beings from outer space.
 
-Until we make contact will be hard to determine if we are visited or not, but one *possible* evidence is UFOs. UFOs are Unidentified flying objects. Many of them can be explained, but some remain mysterious, such as the [Tic Tac](https://www.youtube.com/watch?v=bJj9sS6adWs). In this project we will analyze UFO sighting data.
+Until we make contact will be hard to determine if we are visited or not, but one *possible* evidence is **UFOs**. UFOs are Unidentified Flying Objects. While many of them can be easily explained, some remain mysterious. Take for example the [Tic Tac](https://www.youtube.com/watch?v=bJj9sS6adWs). 
+
+In this project we analyze UFO sightings data for getting a better idea of the characteristics of these views.
 
 
 ### The data
@@ -42,9 +42,12 @@ This is first and foremost an exploratory project. We do not have a hypothesis t
 
 ## Analysis
 
+My analysis tool is R.
+I will share all the code, so if anybody is interest can replicate the results.
+
 #### Loading necessay packages
 
-```{r}
+```{r Loading necessary packages}
 library(tidyverse)
 library(janitor)
 library(lubridate) #for working with dates
@@ -114,7 +117,8 @@ ufo_sightings %>%
     filter(year <= 1995 & year >= 1940) %>% 
     summarise(n_sightings = n()) %>% 
     ggplot(aes(x = year, y = n_sightings)) +
-    geom_line()
+    geom_line(color = "white") +
+    theme_dark()
 ```
 Now we can see how much the sightings suffered variation until the 1990's, when it really changes the behavior. This would say that there is something that change in the 1990's. Maybe the ETs discovered our adress.
 
@@ -331,8 +335,10 @@ usa_ufo %>%
     theme_minimal()
 ```
 
-Whe we consider the state populations we see that the fact that California, Texas, and Florida are the states with more sightings are driven mainly due to population size. 
-The state that are really being visited a lot, is Washington. **Evidence that the americans are being governed by reptilians.**
+When we consider the state populations we see that the fact that California, Texas, and Florida are the states with more sightings are driven mainly due to population size. 
+The state that are really being visited a lot, is Washington.
 
-## Do movies affect UFO sightings?
+## Concluding Remarks
 
+
+I've worked on this project with [Kristy](https://www.linkedin.com/in/kristy-johnsen/) and [Adel](https://www.linkedin.com/in/adelmaali/). Both are colleagues from the Google Data Analytics Certificate, and this was a small project that we discussed and worked on together. The original idea of teaming-up and working in a project came from Kristy. 

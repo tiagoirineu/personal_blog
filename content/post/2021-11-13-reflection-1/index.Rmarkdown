@@ -1,0 +1,24 @@
+---
+title: Reflection 1
+author: Tiago Irineu
+date: '2021-11-13'
+slug: reflection-1
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-11-13T12:54:31-03:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+# Reflection 1: Data visualization and truth continuum 
+
+* Truth is not relative nor objective, but a continuum
+* Visualization can help us to get insights not accessible by other means.
+* Visualizations seems more able to impact human perspective. If used ethically, can be a great tool for sharing knowledge and spread the truth
