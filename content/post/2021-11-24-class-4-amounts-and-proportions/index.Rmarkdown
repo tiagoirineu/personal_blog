@@ -1,0 +1,98 @@
+---
+title: 'Class 4: Amounts and proportions'
+author: Tiago Irineu
+date: '2021-11-24'
+slug: class-4-amounts-and-proportions
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-11-24T21:25:19-03:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+### Part 1: Reflection
+* How do these types of visualizations help or hinder our search for truth in data?
+
+As we previously discussed, truth about complex subjects comes in degree. We are closer to the complete truth, the better our models represents the underlying facts. Data visualization is a powerful tool in our search for truth. The problem is that our perception of the data can be mislead if the incorrect plot is used to present the data. 
+
+Take for example the pie chart. It is instinctive to use it as a way to show parts of whole, but it is now clear to me that is the wrong choice in most of the situations. This is a bad choice because we humans are not good in comparing areas and radius, the two elements used to represent data in a pie chart.
+In most situations, it's better to use a bar plot and use length to encode the data. But even bar plots can be misleading if you choose to truncate the graph and do no show the zero, it can give the idea that the difference between the bars are much bigger than they really are. 
+
+The real question here is not a discussion about the specific plot to use. The question is that even if you use the correct data, you can mislead people by your design choices. When designing a plot, we must keep two question in our mind:
+
+* Which aspect of the data I want to emphasize?
+* Will the reader be able to correctly interpret my plot? 
+
+
+By keeping these questions in mind we will not only choose plots that share our main message, but also the ones that enable people to correctly interpret our findings and do not misleead them. Data viz must be truthful, for ourselves and for others.
+
+### Part 2: Analysis of "essential construction sites in New York during the pandemic.
+#### Preliminary ----
+```{r Loading necessary packages}
+library(tidyverse)
+library(janitor)
+library(viridis)
+library(RColorBrewer)
+```
+
+**Loading the data** ----
+
+```{r Loading the data}
+essential_construction <- read_csv("C:/Users/tiago/OneDrive/datasets/data_viz-course/EssentialConstruction.csv")
+
+essential_construction <- clean_names(essential_construction)
+```
+
+* Show the count or proportion of approved projects by borough using a bar chart
+```{r}
+essential_construction %>%
+    mutate(borough = snakecase:: to_title_case(borough)) %>% 
+    group_by(borough) %>% 
+    summarise(n = n()) %>% 
+    ggplot(aes(x = reorder(borough,n), y = n)) + 
+    geom_col(fill = "#1B9E77") +
+    coord_flip() +
+    labs(x = "", y = "",
+         title = "Number of projects approved by borough") +
+    theme_light()
+```
+* Show the count or proportion of approved projects by category using a lollipop chart
+
+```{r Lollipop chart}
+essential_construction %>% 
+    group_by(category) %>% 
+    summarise(n = n()) %>% 
+    ggplot(aes(x = reorder(category, -n), y = n )) +
+    geom_pointrange(aes(ymin = 0, ymax = n), color = "#1B9E77") +
+    coord_flip() +
+    theme_light() +
+    labs(x = "", y = "",
+         title = "Number of approved projects by categories")
+```
+
+In both charts I chose to flip the coordinates because the names were difficult to read.
+
+
+* Show the proportion of approved projects by borough and category simultaneously using a heatmap.
+
+.
+```{r heatmap}
+essential_construction %>% 
+    mutate(borough = snakecase:: to_title_case(borough)) %>% 
+    group_by(borough, category) %>% 
+    summarise(n = n()) %>% 
+    ggplot(aes(x = borough, y = category, fill = n), alpha = 0.5) +
+    geom_tile() +
+    coord_equal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+As we can see, most of the available places were approved works in Manhattan
+
+
