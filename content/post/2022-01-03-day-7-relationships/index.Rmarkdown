@@ -600,3 +600,49 @@ predicted_values %>%
 ```
 
 This is the prediction for the state of Texas. It is not a part of the exercise, but we could also vary the state variable, so we get prediction for different states. 
+
+```{r}
+exp_sim_df <- 
+    expand.grid(
+        percent_white = seq(10,100, by = 1),
+                 percent_black = mean(elections$percent_black),
+                 per_capita_income = mean(elections$per_capita_income),
+                 total_population = mean(elections$total_population),
+                 percent_hispanic = mean(elections$percent_hispanic),
+                 median_rent = mean(elections$median_rent),
+                 median_age = mean(elections$median_age),
+                 state = c("Texas", "Florida", "Michigan", "California")
+        )
+
+# Running the model with the expanded data
+prediction_2 <- augment(model_1, newdata = exp_sim_df, se_fit = TRUE) %>% 
+    
+    # Creating two columns with the values for confidence intervals, at 95%
+    
+    mutate(conf.low = .fitted + (-1.96 * .se.fit),
+           conf.high = .fitted + (1.96 * .se.fit))
+
+predicted_values_2 <- 
+    prediction_2 %>% 
+    select(percent_white, .fitted, conf.low, conf.high,state)        
+
+```
+
+```{r Plotting the expanded data}
+predicted_values_2 %>% 
+    ggplot(aes( x = percent_white, y = .fitted)) +
+    geom_line() +
+    geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = state),
+                alpha = 0.5
+                ) +
+    facet_wrap( ~state) +
+    guides(fill = "none") +
+    labs(title = "More white voters, less votes for democrats",
+         y = "Predicted percentual of votes for democrats",
+         x = "Proportion of white voter in the county")
+
+```
+
+As we can see, the tendency is the same in every state. The higher the proportion of white voters, a smaller proportion of votes were give for democrats.
+
+teste

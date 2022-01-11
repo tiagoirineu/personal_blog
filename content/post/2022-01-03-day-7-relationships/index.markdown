@@ -447,19 +447,418 @@ We can see that wind speed has a considerable impact on temperature, while the o
 
 #### Marginal effects plots
 
-A marginal effect is the effect that the movement in one independent variable has on the dependent variable. For getting this, we keep all the other variable constants and then consider the possible values for the variable of our interest.
+A marginal effect is the effect that the movement in one independent variable has on the dependent variable. For getting this, we keep all the other variables constant and then consider the possible values for the variable of our interest.
 
-Below, we use the **broom** library to simulate this.
+Below, we use the **broom** library to enable us to build a dataset with the explanatory variable values, and them plug them into the model equation.
 
-* **augment()** enables us to plug a data frame of explanatory variables into a model equation and then get predicted values.
+**A toy model**
 
-
-
-
+A simple example of how we will use the **augment()** function, from the broom package.
 
 
+```r
+newdata_example <- tibble(humidity_scaled = 50, moonPhase_scaled = 50, 
+                          precipProbability_scaled = 50, windSpeed = 1, 
+                          pressure = 1000, cloudCover_scaled = 50)
+
+newdata_example
+```
+
+```
+## # A tibble: 1 x 6
+##   humidity_scaled moonPhase_scaled precipProbability_scaled windSpeed pressure
+##             <dbl>            <dbl>                    <dbl>     <dbl>    <dbl>
+## 1              50               50                       50         1     1000
+## # ... with 1 more variable: cloudCover_scaled <dbl>
+```
+
+
+```r
+augment(model_complex, newdata = newdata_example, se_fit = TRUE) %>% 
+    select(.fitted, .se.fit)
+```
+
+```
+## # A tibble: 1 x 2
+##   .fitted .se.fit
+##     <dbl>   <dbl>
+## 1    96.2    3.20
+```
+
+This is our prediction. Given the weather conditions supplied, we predict that the temperature will be 96 °F.
+
+Now, following the same reasoning we will predict the temperature for different wind speeds, keeping all the other values constants in their means.
+
+
+```r
+#First, we build the dataset with the values we want to plug in the model
+
+newdata <- tibble(windSpeed = seq(0, 8, 0.5),
+                  pressure = mean(weather_atl_summer$pressure),
+                  precipProbability_scaled = mean(weather_atl_summer$precipProbability_scaled),
+                  moonPhase_scaled = mean(weather_atl_summer$moonPhase_scaled),
+                  humidity_scaled = mean(weather_atl_summer$humidity_scaled),
+                  cloudCover_scaled = mean(weather_atl_summer$cloudCover_scaled))
+
+
+# Creating the predictions
+
+predicted_values <- augment(model_complex, newdata = newdata, se_fit = TRUE) %>% 
+    #Creating two columns with the extreme values of the confidence interval at 95%
+    mutate(conf.low = .fitted + (-1.96 * .se.fit),
+           conf.high = .fitted + (1.96* .se.fit))
+
+
+predicted_values %>% 
+    select(windSpeed, .fitted, .se.fit, conf.low, conf.high) %>% 
+    head()
+```
+
+```
+## # A tibble: 6 x 5
+##   windSpeed .fitted .se.fit conf.low conf.high
+##       <dbl>   <dbl>   <dbl>    <dbl>     <dbl>
+## 1       0      95.3   1.64      92.0      98.5
+## 2       0.5    94.4   1.44      91.6      97.2
+## 3       1      93.5   1.24      91.1      95.9
+## 4       1.5    92.6   1.04      90.6      94.7
+## 5       2      91.7   0.846     90.1      93.4
+## 6       2.5    90.9   0.662     89.6      92.2
+```
+
+And now we can plot the predicted values.
+
+
+```r
+ggplot(predicted_values, aes(x = windSpeed, y = .fitted)) +
+    #Adding the confidence interval
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
+              fill = "#BF3984", alpha = 0.5) + 
+    #Adds a the regression line.
+  geom_line(size = 1, color = "#BF3984") +
+  labs(x = "Wind speed (MPH)", y = "Predicted high temperature (F)") +
+  theme_minimal()
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/Ploting the predicted values-1.png" width="672" />
+
+Now, an example of varying two variables and how to visualize it.
+
+
+```r
+newdata_fancy <- expand_grid(windSpeed = seq(0, 8, 0.5),
+                             pressure = mean(weather_atl_summer$pressure),
+                             precipProbability_scaled = mean(weather_atl_summer$precipProbability_scaled),
+                             moonPhase_scaled = mean(weather_atl_summer$moonPhase_scaled),
+                             humidity_scaled = mean(weather_atl_summer$humidity_scaled),
+                             cloudCover_scaled = c(0, 33, 66, 100))
+newdata_fancy
+```
+
+```
+## # A tibble: 68 x 6
+##    windSpeed pressure precipProbability_scaled moonPhase_scaled humidity_scaled
+##        <dbl>    <dbl>                    <dbl>            <dbl>           <dbl>
+##  1       0      1016.                     40.4             51.0            64.9
+##  2       0      1016.                     40.4             51.0            64.9
+##  3       0      1016.                     40.4             51.0            64.9
+##  4       0      1016.                     40.4             51.0            64.9
+##  5       0.5    1016.                     40.4             51.0            64.9
+##  6       0.5    1016.                     40.4             51.0            64.9
+##  7       0.5    1016.                     40.4             51.0            64.9
+##  8       0.5    1016.                     40.4             51.0            64.9
+##  9       1      1016.                     40.4             51.0            64.9
+## 10       1      1016.                     40.4             51.0            64.9
+## # ... with 58 more rows, and 1 more variable: cloudCover_scaled <dbl>
+```
 
 
 
+```r
+predicted_values_fancy <- augment(model_complex, newdata = newdata_fancy, se_fit = TRUE) %>% 
+  mutate(conf.low = .fitted + (-1.96 * .se.fit),
+         conf.high = .fitted + (1.96 * .se.fit)) %>% 
+    
+  # Make cloud cover a categorical variable
+  mutate(cloudCover_scaled = factor(cloudCover_scaled))
 
 
+ggplot(predicted_values_fancy, aes(x = windSpeed, y = .fitted)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = cloudCover_scaled),
+              alpha = 0.5) + 
+  geom_line(aes(color = cloudCover_scaled), size = 1) +
+  labs(x = "Wind speed (MPH)", y = "Predicted high temperature (F)") +
+  theme_minimal() +
+  guides(color = FALSE) +
+  facet_wrap(vars(cloudCover_scaled), nrow = 1)
+```
+
+```
+## Warning: `guides(<scale> = FALSE)` is deprecated. Please use `guides(<scale> =
+## "none")` instead.
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/Ploting the new graph-1.png" width="672" />
+The higher the cloud cover, the lower the temperature.
+
+### Exercises
+
+
+```r
+library(tidyverse)
+library(patchwork)
+library(scales)
+```
+
+```
+## 
+## Attaching package: 'scales'
+```
+
+```
+## The following object is masked from 'package:purrr':
+## 
+##     discard
+```
+
+```
+## The following object is masked from 'package:readr':
+## 
+##     col_factor
+```
+
+```r
+library(GGally)
+```
+
+#### Using patchwork
+
+1. Make 2–3 plots of anything you want from the results_2016 data (histogram, density, boxplot, scatterplot, whatever) and combine them with patchwork. Look at the documentation to see fancy ways of combining them, like having two rows inside a column.
+
+
+```r
+elections <-read_csv("C:/Users/tiago/OneDrive/datasets/data_viz-course/results_2016.csv")
+```
+
+```
+## Rows: 3158 Columns: 20
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (3): state, state_po, county
+## dbl (17): year, FIPS, totalvotes, D, O, R, percent_dem, percent_gop, percent...
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
+glimpse(elections)
+```
+
+```
+## Rows: 3,158
+## Columns: 20
+## $ year              <dbl> 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016~
+## $ state             <chr> "Alabama", "Alabama", "Alabama", "Alabama", "Alabama~
+## $ state_po          <chr> "AL", "AL", "AL", "AL", "AL", "AL", "AL", "AL", "AL"~
+## $ county            <chr> "Autauga", "Baldwin", "Barbour", "Bibb", "Blount", "~
+## $ FIPS              <dbl> 1001, 1003, 1005, 1007, 1009, 1011, 1013, 1015, 1017~
+## $ totalvotes        <dbl> 24973, 95215, 10469, 8819, 25588, 4710, 8732, 47864,~
+## $ D                 <dbl> 5936, 18458, 4871, 1874, 2156, 3530, 3726, 13242, 57~
+## $ O                 <dbl> 865, 3874, 144, 207, 573, 40, 105, 1757, 273, 233, 3~
+## $ R                 <dbl> 18172, 72883, 5454, 6738, 22859, 1140, 4901, 32865, ~
+## $ percent_dem       <dbl> 23.769671, 19.385601, 46.527844, 21.249575, 8.425825~
+## $ percent_gop       <dbl> 72.76659, 76.54571, 52.09667, 76.40322, 89.33484, 24~
+## $ percent_other     <dbl> 3.4637408, 4.0686867, 1.3754895, 2.3472049, 2.239330~
+## $ total_population  <dbl> 54907, 187114, 27321, 22754, 57623, 10746, 20624, 11~
+## $ percent_white     <dbl> 76, 83, 46, 75, 88, 22, 54, 73, 58, 92, 81, 56, 54, ~
+## $ percent_black     <dbl> 18, 9, 46, 22, 1, 71, 44, 21, 40, 5, 10, 43, 44, 15,~
+## $ percent_asian     <dbl> 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0~
+## $ percent_hispanic  <dbl> 2, 4, 5, 2, 8, 6, 1, 3, 1, 1, 8, 0, 0, 3, 2, 6, 2, 1~
+## $ per_capita_income <dbl> 24571, 26766, 16829, 17427, 20730, 18628, 17403, 208~
+## $ median_rent       <dbl> 668, 693, 382, 351, 403, 276, 331, 422, 374, 375, 40~
+## $ median_age        <dbl> 37.5, 41.5, 38.3, 39.4, 39.6, 39.6, 40.6, 38.7, 42.4~
+```
+
+
+
+```r
+elections <- elections %>% 
+    # Create vote proportions for each group by state
+   mutate(w_party = case_when(percent_dem > percent_gop ~"D",
+                              TRUE ~ "R"))
+```
+
+
+```r
+income_density <- elections %>% ggplot(aes(x =(per_capita_income))) +
+    labs(y = "", fill = "Party", x = "Income per capita") +
+    geom_density(aes(fill = as_factor(w_party)), alpha = 0.5) +
+    scale_y_continuous(labels = NULL)
+
+city_size <- elections %>%  ggplot(aes(x = log10(total_population))) +
+    geom_density(aes(fill = as_factor(w_party)), alpha = 0.5) +
+    labs(y = "", x = "Population size") +
+    theme_light() + 
+    guides(fill = "none") +
+    scale_y_continuous(labels = NULL)
+
+
+age <- elections %>% 
+    ggplot(aes( x = median_age)) +
+    geom_density(aes(fill = as_factor(w_party)), alpha = 0.5) +
+    labs(y = "", x = "Median age") +
+    theme_light() + guides(fill = "none") +
+    scale_y_continuous(labels = NULL)
+```
+
+
+```r
+income_density/ (city_size + age) +
+    plot_annotation(title = "Younger people and from big cities voted for Democrats in 2016") +
+    plot_layout(guides = 'collect')
+```
+
+```
+## Warning: Removed 45 rows containing non-finite values (stat_density).
+
+## Warning: Removed 45 rows containing non-finite values (stat_density).
+
+## Warning: Removed 45 rows containing non-finite values (stat_density).
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/Using patchwork to combine three plots-1.png" width="672" />
+
+Counties with a bigger population size and with a younger population tended to vote for democrats in the 2016 elections. The distribution of vote for income bracket is more interesting. While republican won mostly in counties with a low-middle income, democrats won in poorer and richer counties.
+
+#### Visualizing regression
+
+2. Use the results_2016 data to create a model that predicts the percent of Democratic votes in a precinct based on age, race, income, rent, and state.
+
+
+```r
+model_1 <- lm(percent_dem ~ percent_white + percent_black + percent_hispanic + per_capita_income + median_age + median_rent + state, data = elections)
+
+tidy_results <- broom:: tidy(model_1, conf.int = TRUE) %>% 
+    filter( term != "(Intercept)")  %>%
+    # Extract every coefficient with state in its name
+  filter(!str_detect(term, "state"))
+
+ggplot(tidy_results,
+       aes( x = estimate, y =term)) +
+    geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
+    geom_vline(xintercept = 0, color = "red", linetype = "dotted") + 
+    labs(x = "Coefficient estimate", y = NULL) +
+    theme_minimal()
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/Fitting and plotting the model-1.png" width="672" />
+
+Surprising no one, race is the variable the affects the most the proportion of people that voted for democrats in the different counties.
+
+
+### Marginal effects
+First, it is necessary to build a new dataset. So we can simulate the predicted values.
+I want to consider the impact of varying the proportion of white voters.
+
+
+```r
+elections <- drop_na(elections)
+sim_df <- tibble(percent_white = seq(10,100, by = 1),
+                 percent_black = mean(elections$percent_black),
+                 per_capita_income = mean(elections$per_capita_income),
+                 total_population = mean(elections$total_population),
+                 percent_hispanic = mean(elections$percent_hispanic),
+                 median_rent = mean(elections$median_rent),
+                 median_age = mean(elections$median_age),
+                 state = "Texas"
+                 )
+```
+Now, we use the augment function to plug in the values of the model.
+
+
+```r
+# The augment function runs the model over the data provided, and returns a tibble with predicted values and other useful info
+
+prediction <- augment(model_1, newdata = sim_df, se_fit = TRUE) %>% 
+    
+    # Creating two columns with the values for confidence intervals, at 95%
+    
+    mutate(conf.low = .fitted + (-1.96 * .se.fit),
+           conf.high = .fitted + (1.96 * .se.fit))
+
+predicted_values <- 
+    prediction %>% 
+    select(percent_white, .fitted, conf.low, conf.high)
+```
+
+
+```r
+predicted_values %>% 
+    ggplot(aes(x = percent_white, y = .fitted)) +
+    geom_line() +
+    geom_ribbon(aes( ymin = conf.low, ymax = conf.high),
+    alpha = 0.5, fill = "blue") +
+    labs(x = "Percent of white voters", 
+         y = "Predicted democrat share (%) of votes", 
+         title = "More white voters, less support for the Democrat party",
+         subtitle = "Prediction for Texas")
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/Building the plot-1.png" width="672" />
+
+This is the prediction for the state of Texas. It is not a part of the exercise, but we could also vary the state variable, so we get prediction for different states. 
+
+
+```r
+exp_sim_df <- 
+    expand.grid(
+        percent_white = seq(10,100, by = 1),
+                 percent_black = mean(elections$percent_black),
+                 per_capita_income = mean(elections$per_capita_income),
+                 total_population = mean(elections$total_population),
+                 percent_hispanic = mean(elections$percent_hispanic),
+                 median_rent = mean(elections$median_rent),
+                 median_age = mean(elections$median_age),
+                 state = c("Texas", "Florida", "Michigan", "California")
+        )
+
+# Running the model with the expanded data
+prediction_2 <- augment(model_1, newdata = exp_sim_df, se_fit = TRUE) %>% 
+    
+    # Creating two columns with the values for confidence intervals, at 95%
+    
+    mutate(conf.low = .fitted + (-1.96 * .se.fit),
+           conf.high = .fitted + (1.96 * .se.fit))
+
+predicted_values_2 <- 
+    prediction_2 %>% 
+    select(percent_white, .fitted, conf.low, conf.high,state)        
+```
+
+
+```r
+predicted_values_2 %>% 
+    ggplot(aes( x = percent_white, y = .fitted)) +
+    geom_line() +
+    geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = state),
+                alpha = 0.5
+                ) +
+    facet_wrap( ~state) +
+    guides(fill = "none") +
+    labs(title = "More white voters, less votes for democrats",
+         y = "Predicted percentual of votes for democrats",
+         x = "Proportion of white voter in the county")
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/Plotting the expanded data-1.png" width="672" />
+
+As we can see, the tendency is the same in every state. The higher the proportion of white voters, a smaller proportion of votes were give for democrats.
+
+teste
