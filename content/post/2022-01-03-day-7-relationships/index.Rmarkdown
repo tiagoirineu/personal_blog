@@ -556,15 +556,47 @@ I want to consider the impact of varying the proportion of white voters.
 ```{r Simulating the dataset}
 elections <- drop_na(elections)
 sim_df <- tibble(percent_white = seq(10,100, by = 1),
-                 perc_black = mean(elections$percent_black),
-                 income = mean(elections$per_capita_income),
-                 population = mean(elections$total_population),
-                 perc_hispanic = mean(elections$percent_hispanic),
-                 rent = mean(elections$median_rent),
-                 age = mean(elections$median_age)
+                 percent_black = mean(elections$percent_black),
+                 per_capita_income = mean(elections$per_capita_income),
+                 total_population = mean(elections$total_population),
+                 percent_hispanic = mean(elections$percent_hispanic),
+                 median_rent = mean(elections$median_rent),
+                 median_age = mean(elections$median_age),
+                 state = "Texas"
                  )
 
 ```
 Now, we use the augment function to plug in the values of the model.
 
+```{r Creating predicted values}
 
+# The augment function runs the model over the data provided, and returns a tibble with predicted values and other useful info
+
+prediction <- augment(model_1, newdata = sim_df, se_fit = TRUE) %>% 
+    
+    # Creating two columns with the values for confidence intervals, at 95%
+    
+    mutate(conf.low = .fitted + (-1.96 * .se.fit),
+           conf.high = .fitted + (1.96 * .se.fit))
+
+predicted_values <- 
+    prediction %>% 
+    select(percent_white, .fitted, conf.low, conf.high)
+
+```
+
+```{r Building the plot}
+
+predicted_values %>% 
+    ggplot(aes(x = percent_white, y = .fitted)) +
+    geom_line() +
+    geom_ribbon(aes( ymin = conf.low, ymax = conf.high),
+    alpha = 0.5, fill = "blue") +
+    labs(x = "Percent of white voters", 
+         y = "Predicted democrat share (%) of votes", 
+         title = "More white voters, less support for the Democrat party",
+         subtitle = "Prediction for Texas")
+
+```
+
+This is the prediction for the state of Texas. It is not a part of the exercise, but we could also vary the state variable, so we get prediction for different states. 
