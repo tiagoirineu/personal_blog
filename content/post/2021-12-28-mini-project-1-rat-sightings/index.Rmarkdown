@@ -1,0 +1,39 @@
+---
+title: 'Mini Project 1: Rat sightings'
+author: Tiago Irineu
+date: '2021-12-28'
+slug: mini-project-1-rat-sightings
+categories: []
+tags: []
+subtitle: ''
+summary: 'In this project I analyze the data regarding rat sightins in New York. The data range is from 2015 to 2017'
+authors: []
+lastmod: '2021-12-28T21:05:01-03:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+### Rats in New York
+
+```{r Loading packages and reading the data}
+# Loading packages
+
+library(tidyverse)
+library(scales)
+library(lubridate)
+
+# Reading the data
+
+rats <-  read_csv("C:/Users/tiago/OneDrive/datasets/data_viz-course/Rat_Sightings.csv")
+
+rats <- janitor::clean_names(rats)
+head(rats)
+```
+```{r}
+colnames(rats)
+```
+

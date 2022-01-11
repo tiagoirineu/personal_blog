@@ -1,0 +1,570 @@
+---
+title: Day 7 - Relationships
+author: Tiago Irineu
+date: '2022-01-03'
+slug: day-7-relationships
+categories: []
+tags: R, visualization
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2022-01-03T07:39:44-03:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: [Data Visualization Course]
+---
+
+# Visualizing relationships
+
+## Reflection
+
+One of the complications of data visualization is how easy we are to be mislead. Be it by other or, even easier, by ourselves. When dealing with two variables and their relationships this becomes an ever bigger problem because there are new ways of misleading ourselves and our readers.
+
+Anybody that has ever read anything about statistics knows that **correlation does not imply causation**. And yet, misleading correlation and causation is probably the most committed mistake when communicating relationships between two variables. This seems to be a silly mistake, but it is not. If we are plotting two variables together, it is a safe bet that we are interested in how they interact, and how one is able to "explain" the other. And given that our brain is always seeking patterns is not really surprising that we see relationships where there is none, and that after that we make the jump to discuss causation without having any statistical basis for that. But how to solve this and does not mislead our reader?
+
+First, we must be aware of spurious relationships. Is there any theory or reasoning that would justify a relationship between the two variables? If not, does not create a narrative just because the graph seems to show that they move together. Of course, visualization is an important part of exploratory data analysis, and in many moments it may show us surprising relationships. But we **should not** use this as a new big explanation for a phenomena, but as a first step in the exploratory process. In this way, we must be clear with ourselves and our readers in what is the role of that visualization. And if want to make the case for a meaningful relationship we must provide a reasonable hypothesis for why this is not a spurious relationship. 
+
+Besides the possible statistical misunderstanding, we must also consider the problems in the human perception. Most adults will treat the x-axis as the explanatory variable and the y-variable as the explained. So, when plotting the relationship between two variable we should probably follow this. Besides that, we should avoid using two y-axes because it creates a new range of difficulty for interpreting the results. 
+
+In the end, we must strive to be truthful. If we do this, and consider the possible statistical traps and perception problems humans have, we will make a good job.
+
+## Example
+
+This example session is important because it goes through the basics of regression graphical analysis. This is a first step in statistical modelling 
+
+
+### Loading and Cleaning the data
+
+```{r Loading libraries, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(patchwork) # For combining ggplots plots
+library(GGally) # For scatterplot matrices
+library(broom)  # For converting model objects to data frames
+
+```
+
+```{r Reading the data, warning=FALSE}
+
+weather_atl <- read_csv("C:/Users/tiago/OneDrive/datasets/data_viz-course/atl-weather-2019.csv")
+
+```
+
+### Legal dual y-axes
+
+It is bad practice to use two y-axes for two different variables. It create a lot of room for misinterpretation. But, it may be a good ideal to use two y-axes to show the same variable but with some transformation. For example, showing temperature in Fahrenheit and Celsius. Pounds and kilograms. Inches and centimeters.
+
+For this, we must use the ggplot argument *scale_y_continuous()* with *sec.axis*.
+
+Let's consider the formula for temperature transformation.
+
+$$ C=(32-F)* \frac{5}{9}$$
+
+```{r Temperature plot}
+
+ggplot(weather_atl, aes(x = time, y = temperatureHigh)) +
+    geom_line() +
+    scale_y_continuous(sec.axis = sec_axis(trans = ~ (32-.)* -5/9,
+                                           name = "Celsius")) +
+    labs(x = NULL, y = "Fahrenheit") +
+    theme_minimal()
+```
+
+This works because we are not comparing two variables. Instead, we are just showing how the temperature evolved throughout the year. 
+
+### Combining Plots
+
+Now, let's use the package [patchwork](https://patchwork.data-imaginist.com/articles/patchwork.html) to combine multiple plots instead of using double-y axis.
+
+To use **patchwork** we must first assign the plots for objects and then add them together using **+**.
+
+
+
+* **Using patchwork to check the relationship between humidity and temperature in Atlanta.**
+
+```{r Temperature in Atlanta, message=FALSE, warning=FALSE}
+# Temperature in Atlanta
+
+temp_plot <- ggplot(weather_atl, aes (x = time, y = temperatureHigh)) +
+    geom_line() +
+    geom_smooth() +
+    scale_y_continuous(sec.axis = sec_axis(trans = ~(32 -.) * 5/9,
+                                           name = "Celsius")) +
+    labs(x = NULL, y = "Fahrenheit") +
+    theme_minimal()
+
+temp_plot
+
+
+
+```
+
+```{r Humidity in Atlanta}
+
+humidity_plot <- ggplot(weather_atl, aes( x= time, y = humidity)) +
+    geom_line() +
+    geom_smooth() +
+    labs(x = NULL, y = "humidity") +
+    theme_minimal()
+
+humidity_plot
+
+```
+Now let's combine both plots using patchwork
+
+```{r Using patchwork to combine both plots}
+
+temp_plot + humidity_plot +
+    plot_layout(ncol = 1) # Defines that the plots must be one above the other
+```
+As we can see there is no clear relationship between both variables. While humidity is pretty constant throughout the year, temperature follows the expected pattern and it's much higher in Summer than in Winter.
+
+By default patchwork adds the plots side by side. Using the *plot_layout()* argument it's possible to choose how the plots will be displayed. 
+
+
+### Scatterplot matrices
+
+Visualizing correlations between pairs of variables with the *ggpairs()* functions, from **GGally** package.
+
+```{r Using GGally}
+
+weather_correlations <- weather_atl %>% 
+    select(temperatureHigh, temperatureLow, humidity, windSpeed, precipProbability)
+
+ggpairs(weather_correlations)
+
+```
+
+
+**This can be useful in exploratory data analysis for a general overview of the relationship between the variables.**
+
+In the diagonal we have the density plots of the variables. Above, we have the correlation coefficient and below we have the scatter plots of the variables.
+
+
+### Correlograms
+
+Correlograms are basically heatmaps showing the relationship between the variables.
+
+* The first step is to build a correlation matrix.
+
+```{r Creating a correlation matrix}
+
+things_to_correlate <- weather_atl %>%  # Creating the correlation matrix
+    select(temperatureHigh, temperatureLow, humidity, windSpeed, precipProbability) %>% 
+    cor()
+
+# Dropping the lower half because has the same values as the top half
+
+things_to_correlate[lower.tri(things_to_correlate)] <- NA
+things_to_correlate
+
+```
+
+Now, let's wrangle the data so it is in the appropriate format for ploting. 
+
+
+```{r Wrangling the data}
+
+things_to_correlate_long <- things_to_correlate %>% 
+    #Convert to a data frame
+    as.data.frame() %>% 
+    # as.data.frame does not convert the matrix column names to columns in the df. So we must add it
+    # manually
+    rownames_to_column("measure2") %>% 
+    
+    # Make this long.
+    pivot_longer(cols = -measure2,             # Selects all columns except for measure2
+                 names_to = "measure1",
+                 values_to = "cor") %>%
+    mutate(nice_cor = round(cor, 2)) %>% 
+    
+    #Remove rows where the two measures are the same
+     
+    filter(measure2 != measure1) %>% 
+    
+    #Get rid of the empty triangle
+    
+    filter(!is.na(cor)) %>% 
+    
+    # Put these categories in order
+    
+    mutate(measure1 = fct_inorder(measure1),
+           measure2 = fct_inorder(measure2))
+
+things_to_correlate_long
+    
+    
+```
+
+Now, finally. Let's make the correlogram.
+
+
+```{r Correlogram}
+ggplot(things_to_correlate_long,
+       aes( x = measure2, y = measure1, fill = cor)) +
+    geom_tile() +    # Creates the tile heatmap
+    geom_text(aes(label = nice_cor)) +
+    scale_fill_gradient2(low = "#E16462", mid= "white", high = "#0D0887",      # Creates a divergent pallete
+                         limits = c(-1,1)) +
+    labs( x = NULL, y = NULL) +
+    coord_equal() +
+    theme_minimal() +
+    theme(panel.grid = element_blank())
+
+
+```
+
+Now, let's do the same using points.
+
+
+```{r Correlograms with points}
+ggplot(
+    things_to_correlate_long,
+    aes(x = measure2, y = measure1, color = cor)) +
+    geom_point(aes(size = abs(cor))) +    # Use abs for getting the same color for -1 and 1
+    scale_color_gradient2( low = "#E16462", mid = "white", high = "#0D0887",
+                           limits = c(-1, 1)) +
+    scale_size_area(max_size = 15, limits = c(-1,1), guide =FALSE) +
+                        labs(x = NULL, y = NULL) +
+                        coord_equal() +              # Guarantees that they are plotted proportionally
+                        theme_minimal() +
+                        theme(panel.grid = element_blank())
+
+
+```
+
+### Regression
+
+#### Simple Regression
+
+In a simple regression we are building a statistical model for measuring the relationship between an independent variable and a dependent one. It is called simple because we are using only one variable for understanding the variation in the dependent variable. 
+
+We can represent a simple regression model as below.
+
+$$ \hat{y} = \beta_0 + \beta_1x_1 + \epsilon$$
+
+Where $ \beta_0 $ is the intercept. This would be the predicted value when $ x_1 $ is equal to zero. The $ \epsilon $ represents all the factors that influence the outcome variable but are not being considered in our model.
+
+We interpret this model as saying that **one unit increase in $ x_1 $ is associated with a $ \beta_1 $ increase/decrease in $ \hat{y} $, on average.
+
+____________
+Let's first wrangle some data
+
+```{r Wrangling data for regression}
+
+weather_atl_summer <- weather_atl %>% 
+  filter(time >= "2019-05-01", time <= "2019-09-30") %>% 
+  mutate(humidity_scaled = humidity * 100,
+         moonPhase_scaled = moonPhase * 100,
+         precipProbability_scaled = precipProbability * 100,
+         cloudCover_scaled = cloudCover * 100)
+```
+
+Now we can fit the model.
+
+```{r Fitting a simple regression model}
+model_simple <- lm(temperatureHigh ~ humidity_scaled,
+                   data = weather_atl_summer)
+
+tidy(model_simple, conf.int = TRUE)  # Transforms the outcome matrix in a dataframe
+
+
+```
+
+In R we build regression models using the format **dependent_variable ~ independent_variable**. So, in our model we are looking at how humidity explains the variation in temperatureHigh.
+
+ **Interpretation**
+* Usually there is no relevant interpretation of the intercept. As we do not have a day with zero humidity, this value is not important. It is relevant only for plotting the regression line.
+
+* The value estimated for humidity is saying that one percent increase in humidity is associated with a decrease of 0.238 °F degrees in temperature, on average.
+
+___
+
+Since we are dealing with only two variables we can easily visualize it now.
+
+```{r Visualizign a simple regression model}
+
+ggplot( weather_atl_summer,
+        aes(x = humidity_scaled, y = temperatureHigh)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    labs(x = "Humidity", y = "Temperature") +
+    theme_minimal()
+```
+
+Now we can visualize the fact that as humidity increases, temperature decreases.
+
+
+#### Multiple Regression models
+
+Sadly for us we do not live in a simple world where one variable is usually enough for explaining the problems we want to understand. Therefore, we need to consider multiple variables when studying any phenomena. This makes impossible to use simple visualization such as scatterplots, but there are still some options. Below, we first fit a multiple regression, and after this we go through some visualization options. 
+
+A multiple regression has the following form:
+
+$$ \hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \space ... \space + \beta_n x_n + \epsilon $$
+where $ x_i $ represents an independent/explanatory variable and $ \beta_i $ is the estimated coefficient for this variable. 
+
+We can interpret the coefficient in two ways, conditional in the type of the variable.
+
+* For **continuous** variables: Holding everything else constant, one unit increase in X is associated with a $ \beta_i $ increase/decrease in Y, on average.
+
+
+* For **categorical** variables: $ X_n $ is $ \beta_n $ units larger/smaller than the $ X_omitted $ variable on average.
+*An explanation is necessary here. When using categorical variables, one value of the variable will be omitted and used as a standard for comparison *
+
+
+**Fitting the model**
+
+```{r A multiple regression model}
+
+model_complex <- lm(temperatureHigh ~ humidity_scaled + moonPhase_scaled +
+                        precipProbability_scaled + windSpeed + pressure + cloudCover_scaled,
+                    data = weather_atl_summer)
+
+tidy(model_complex, conf.int = TRUE)    # It will return the confidence intervals form each coefficient
+
+```
+
+#### Coefficient plots
+
+Now, we can use this table for plotting the coefficients. This is a good way of seeing how big is the impact and if it seems to be statistically different from zero. 
+
+
+```{r Coefficient plots}
+
+# First, we drop the intercept. It's coefficient plot after all
+
+model_tidied <- tidy(model_complex, conf.int = TRUE) %>%  
+    filter(term != "(Intercept)")
+
+ggplot(model_tidied,
+       aes(x = estimate, y = term)) +
+    # Adding a vertical line at 0, for helping the interpretation
+    geom_vline(xintercept = 0, color = "red", linetype = "dotted") + 
+    # Creates the confidence intervals
+    geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
+    labs(x = "Coefficient estimate", y = NULL) +
+    theme_minimal()
+
+
+```
+
+We can see that wind speed has a considerable impact on temperature, while the other variables have effects close to zero. 
+
+#### Marginal effects plots
+
+A marginal effect is the effect that the movement in one independent variable has on the dependent variable. For getting this, we keep all the other variables constant and then consider the possible values for the variable of our interest.
+
+Below, we use the **broom** library to enable us to build a dataset with the explanatory variable values, and them plug them into the model equation.
+
+**A toy model**
+
+A simple example of how we will use the **augment()** function, from the broom package.
+
+```{r Example of using augment}
+
+
+newdata_example <- tibble(humidity_scaled = 50, moonPhase_scaled = 50, 
+                          precipProbability_scaled = 50, windSpeed = 1, 
+                          pressure = 1000, cloudCover_scaled = 50)
+
+newdata_example
+
+```
+
+```{r Using augment }
+
+augment(model_complex, newdata = newdata_example, se_fit = TRUE) %>% 
+    select(.fitted, .se.fit)
+
+```
+
+This is our prediction. Given the weather conditions supplied, we predict that the temperature will be 96 °F.
+
+Now, following the same reasoning we will predict the temperature for different wind speeds, keeping all the other values constants in their means.
+
+```{r Predicted temperature for different wind speeds}
+
+#First, we build the dataset with the values we want to plug in the model
+
+newdata <- tibble(windSpeed = seq(0, 8, 0.5),
+                  pressure = mean(weather_atl_summer$pressure),
+                  precipProbability_scaled = mean(weather_atl_summer$precipProbability_scaled),
+                  moonPhase_scaled = mean(weather_atl_summer$moonPhase_scaled),
+                  humidity_scaled = mean(weather_atl_summer$humidity_scaled),
+                  cloudCover_scaled = mean(weather_atl_summer$cloudCover_scaled))
+
+
+# Creating the predictions
+
+predicted_values <- augment(model_complex, newdata = newdata, se_fit = TRUE) %>% 
+    #Creating two columns with the extreme values of the confidence interval at 95%
+    mutate(conf.low = .fitted + (-1.96 * .se.fit),
+           conf.high = .fitted + (1.96* .se.fit))
+
+
+predicted_values %>% 
+    select(windSpeed, .fitted, .se.fit, conf.low, conf.high) %>% 
+    head()
+
+```
+
+And now we can plot the predicted values.
+
+```{r Ploting the predicted values}
+
+ggplot(predicted_values, aes(x = windSpeed, y = .fitted)) +
+    #Adding the confidence interval
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
+              fill = "#BF3984", alpha = 0.5) + 
+    #Adds a the regression line.
+  geom_line(size = 1, color = "#BF3984") +
+  labs(x = "Wind speed (MPH)", y = "Predicted high temperature (F)") +
+  theme_minimal()
+```
+
+Now, an example of varying two variables and how to visualize it.
+
+```{r wind speed and cloud}
+
+newdata_fancy <- expand_grid(windSpeed = seq(0, 8, 0.5),
+                             pressure = mean(weather_atl_summer$pressure),
+                             precipProbability_scaled = mean(weather_atl_summer$precipProbability_scaled),
+                             moonPhase_scaled = mean(weather_atl_summer$moonPhase_scaled),
+                             humidity_scaled = mean(weather_atl_summer$humidity_scaled),
+                             cloudCover_scaled = c(0, 33, 66, 100))
+newdata_fancy
+
+```
+
+
+```{r Ploting the new graph}
+
+predicted_values_fancy <- augment(model_complex, newdata = newdata_fancy, se_fit = TRUE) %>% 
+  mutate(conf.low = .fitted + (-1.96 * .se.fit),
+         conf.high = .fitted + (1.96 * .se.fit)) %>% 
+    
+  # Make cloud cover a categorical variable
+  mutate(cloudCover_scaled = factor(cloudCover_scaled))
+
+
+ggplot(predicted_values_fancy, aes(x = windSpeed, y = .fitted)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = cloudCover_scaled),
+              alpha = 0.5) + 
+  geom_line(aes(color = cloudCover_scaled), size = 1) +
+  labs(x = "Wind speed (MPH)", y = "Predicted high temperature (F)") +
+  theme_minimal() +
+  guides(color = FALSE) +
+  facet_wrap(vars(cloudCover_scaled), nrow = 1)
+```
+The higher the cloud cover, the lower the temperature.
+
+### Exercises
+
+```{r Loading necessary libraries}
+library(tidyverse)
+library(patchwork)
+library(scales)
+library(GGally)
+```
+
+#### Using patchwork
+
+1. Make 2–3 plots of anything you want from the results_2016 data (histogram, density, boxplot, scatterplot, whatever) and combine them with patchwork. Look at the documentation to see fancy ways of combining them, like having two rows inside a column.
+
+```{r Loading necessary libraries and the dataset}
+elections <-read_csv("C:/Users/tiago/OneDrive/datasets/data_viz-course/results_2016.csv")
+
+glimpse(elections)
+```
+
+
+```{r}
+elections <- elections %>% 
+    # Create vote proportions for each group by state
+   mutate(w_party = case_when(percent_dem > percent_gop ~"D",
+                              TRUE ~ "R"))
+
+
+
+```
+
+```{r Building the plots to be combined}
+income_density <- elections %>% ggplot(aes(x =(per_capita_income))) +
+    labs(y = "", fill = "Party", x = "Income per capita") +
+    geom_density(aes(fill = as_factor(w_party)), alpha = 0.5) +
+    scale_y_continuous(labels = NULL)
+
+city_size <- elections %>%  ggplot(aes(x = log10(total_population))) +
+    geom_density(aes(fill = as_factor(w_party)), alpha = 0.5) +
+    labs(y = "", x = "Population size") +
+    theme_light() + 
+    guides(fill = "none") +
+    scale_y_continuous(labels = NULL)
+
+
+age <- elections %>% 
+    ggplot(aes( x = median_age)) +
+    geom_density(aes(fill = as_factor(w_party)), alpha = 0.5) +
+    labs(y = "", x = "Median age") +
+    theme_light() + guides(fill = "none") +
+    scale_y_continuous(labels = NULL)
+
+```
+
+```{r Using patchwork to combine three plots}
+income_density/ (city_size + age) +
+    plot_annotation(title = "Younger people and from big cities voted for Democrats in 2016") +
+    plot_layout(guides = 'collect')
+
+```
+
+Counties with a bigger population size and with a younger population tended to vote for democrats in the 2016 elections. The distribution of vote for income bracket is more interesting. While republican won mostly in counties with a low-middle income, democrats won in poorer and richer counties.
+
+#### Visualizing regression
+
+2. Use the results_2016 data to create a model that predicts the percent of Democratic votes in a precinct based on age, race, income, rent, and state.
+
+```{r Fitting and plotting the model}
+
+model_1 <- lm(percent_dem ~ percent_white + percent_black + percent_hispanic + per_capita_income + median_age + median_rent + state, data = elections)
+
+tidy_results <- broom:: tidy(model_1, conf.int = TRUE) %>% 
+    filter( term != "(Intercept)")  %>%
+    # Extract every coefficient with state in its name
+  filter(!str_detect(term, "state"))
+
+ggplot(tidy_results,
+       aes( x = estimate, y =term)) +
+    geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
+    geom_vline(xintercept = 0, color = "red", linetype = "dotted") + 
+    labs(x = "Coefficient estimate", y = NULL) +
+    theme_minimal()
+
+```
+
+Surprising no one, race is the variable the affects the most the proportion of people that voted for democrats in the different counties.
+
+
+### Marginal effects
+First, it is necessary to build a new dataset. So we can simulate the predicted values.
+I want to consider the impact of varying the proportion of white voters.
+
+```{r Simulating the dataset}
+elections <- drop_na(elections)
+sim_df <- tibble(percent_white = seq(10,100, by = 1),
+                 perc_black = mean(elections$percent_black),
+                 income = mean(elections$per_capita_income),
+                 population = mean(elections$total_population),
+                 perc_hispanic = mean(elections$percent_hispanic),
+                 rent = mean(elections$median_rent),
+                 age = mean(elections$median_age)
+                 )
+
+```
+Now, we use the augment function to plug in the values of the model.
+
+
