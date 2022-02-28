@@ -26,28 +26,11 @@ No reflections for this day.
 ### Example
 
 
+
+
+
 ```r
 library(tidyverse)  # For ggplot, dplyr, and friends
-```
-
-```
-## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
-```
-
-```
-## v ggplot2 3.3.5.9000     v purrr   0.3.4     
-## v tibble  3.1.5          v dplyr   1.0.7     
-## v tidyr   1.1.3          v stringr 1.4.0     
-## v readr   2.0.0          v forcats 0.5.1
-```
-
-```
-## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()
-```
-
-```r
 library(WDI)        # Get data from the World Bank
 library(ggrepel)    # For non-overlapping labels
 
@@ -55,7 +38,7 @@ library(ggtext)
 
 indicators <- c("SP.POP.TOTL",     # Population
                 "EN.ATM.CO2E.PC",  # CO2 emissions
-                "NY.GDP.PCAP.KD")  # GDP per capita
+                "NY.GDP.PCAP.KD")  # GDP per capta
 
 wdi_co2_raw <- WDI(country = "all", indicators, extra = TRUE, 
                    start = 1995, end = 2015)
@@ -326,7 +309,7 @@ fert_plot %>%
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/fertility x pib per capita-1.png" width="672" />
 
-
+End of lesson
 
 
 

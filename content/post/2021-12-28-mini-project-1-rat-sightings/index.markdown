@@ -25,7 +25,8 @@ Instead of using the basic script shared by the teacher, I chose to work from a 
 
 First, I will load the data and apply the function *clean_names* from the **janitor** package. This function transform all column names to snake_case.
 
-```{r Loading packages and reading the data, message=FALSE, warning=FALSE}
+
+```r
 # Loading packages
 
 library(tidyverse)
@@ -38,7 +39,6 @@ library(ggthemes)
 rats <-  read_csv("C:/Users/tiago/OneDrive/datasets/data_viz-course/Rat_Sightings.csv")
 
 rats <- janitor::clean_names(rats)
-
 ```
 Now, I have to prepare the data for creating the plot.
 
@@ -49,8 +49,8 @@ R is a bit dumb, so I have to use the function *mdy_hms()* to tell R the format 
 
 
 
-```{r Working with the data , message=FALSE, warning=FALSE}
 
+```r
 rats_date <- rats %>% 
     mutate(created_date = mdy_hms(created_date),
            year = year(created_date),
@@ -58,7 +58,6 @@ rats_date <- rats %>%
     group_by(year, borough) %>% 
     summarise( n_sightings = n()) %>% 
     filter(n_sightings > 1)
-
 ```
 
 Below, is the my final plot.
@@ -69,8 +68,8 @@ In the graph below, we see the evolution of rats sightings through the year and 
 
 
 
-```{r, Evolution of rat sighting per borough}
 
+```r
 rats_date %>% 
     ggplot() +
     geom_point(aes(x = year, y = n_sightings, color = borough), size = 2) +
@@ -101,8 +100,25 @@ rats_date %>%
           plot.subtitle = element_text(family = "mono", size = 14), 
           panel.background = element_rect(color = "black", fill = "lightblue")
           )
+```
 
 ```
+## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database
+```
+
+```
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/Evolution of rat sighting per borough-1.png" width="672" />
 
 
 We can see that the number of rat sightings raised in almost all boroughs, but has fallen in 2017.
