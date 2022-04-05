@@ -85,29 +85,58 @@ rats_date %>%
              nudge_x = 0.5, alpha = 1, size = 3, angle = -15, fontface = "bold"
     ) +
     
-    labs(title = "Rats sightings have increase in NY",
-         subtitle = "Sights per borough: From 2010 to 2017",
-         x = "", y = "N° of sightings") +
+    labs(title = "Rats sightings have increased in NY",
+         subtitle = "Sights per borough: 2010 to 2017",
+         x = "", y = "") +
     
     guides(color = "none") +
     theme_minimal() +
     theme(panel.grid = element_blank(),
           plot.margin = margin(t = 5, r= 5, b = 5, l =2),
-          axis.text.y   = element_text(family = "mono"),
-          axis.text.x = element_text(family = "mono"),
-          axis.title.y = element_text(family = "mono", face = "bold"),
+          axis.text.y   = element_text(family = "Source Sans Pro", color = "gray24"),
+          axis.text.x = element_text(family = "Source Sans Pro", color = "gray24"),
+          axis.title.y =  element_blank(), #element_text(family = "Source Sans Pro", face = "bold", color = "gray24"),
+          axis.title.x = element_blank(),
           plot.title = element_text(family = "AppleGothic", face = "bold", size = 18),
-          plot.subtitle = element_text(family = "mono", size = 14), 
-          panel.background = element_rect(color = "black", fill = "lightblue")
+          plot.subtitle = element_text(family = "Source Sans Pro", size = 14, color = "gray24", face = "bold"), 
+          panel.background = element_rect(color = "cyan3", fill = "cyan3"),
+          plot.background = element_rect(fill = "cyan2")
           )
 ```
 
 ```
 ## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
 ## found in Windows font database
+
+## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database
+
+## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database
 ```
 
 ```
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
 ## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 ## family not found in Windows font database
 

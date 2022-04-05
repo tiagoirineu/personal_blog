@@ -1,0 +1,219 @@
+---
+title: "Day 10 - Interactivity"
+author: "Tiago Irineu"
+date: '2022-04-03'
+slug: day-10-interactivity
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2022-04-03T02:23:20-03:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+### Reflection
+
+* *Motivating Question: How helpful (or unhelpful) are explorable explanation*
+
+Explorable explanations are a great data viz tools because it enables more stories to emerge from the same dataset and also is a countermeasure against possible bias in the analysis, given that comparisons and representations that never went through the analyst mind can be created.
+
+Building a plot involves many decision. What data to use? Which transformations apply to it? Which geoms to use. The story you want to tell will guide your choices. But there are other stories in your data that will never be told. And it's possible that one of these untold stories is what your reader needs to see. Explorable explanations ammeliorate this by giving the reader the possibility of finding other stories in your data. Stories that maybe didn't matter for you, but that are key for him.
+
+Take for example the reports about Covid on [Our world in data website](https://ourworldindata.org/coronavirus).
+
+As this pandemic affected all countries, people from different places desired to have access to the data about it's own country. If the site were static, we would probably see information about rich countries, but the others would be ignored. But as it is an explorable site, it was possible to look the data about your region. This made it much more valuable and ameliorated the possible *developed country bias* of much of the worldly reporting we normally read.
+
+So, explorable explanations are helpful because it gives room for the reader to become active and help to develop the stories he is really interested in. And by doing this it not only create stories that more interesting for the reader, but also diminish the impact of possible bias by the analyst.
+
+### Lesson - Interactivity
+
+Three tools for interactive plots in R:
+
+* Plotly
+* flexdashboard
+* Shiny
+
+#### Plotly Example
+
+
+```{r}
+library(tidyverse)
+library(gapminder)
+library(plotly)
+
+gapminder_2007 <- filter(gapminder,
+                    year == 2007)
+
+my_plot <- ggplot(
+    data = gapminder_2007,
+    aes(x = gdpPercap, y = lifeExp,
+        color = continent)
+) +
+    geom_point() +
+    scale_x_log10() +
+    theme_minimal()
+
+```
+
+```{r}
+ggplotly(my_plot)
+```
+As we can see, the function **ggplotly** is able to create an interactive map automatically.
+
+---
+
+Flexdashboard are used to build dashboards. You could create some interactive plots with Plotly and then combine them into a dashboard using Flex.
+
+Besides that, Shiny is a powerful tool for creating apps with R. These apps are running R in the background, therefore it is not necessary that you make all the plots before.
+
+
+### Example
+
+#### Get and clean data
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(WDI)
+library(scales)
+library(plotly)
+```
+```{r reading the data with WDI}
+indicators <- c("SP.POP.TOTL",  #Population
+                "SG.GEN.PARL.ZS", #Prop of seats held by women in nation parliament,
+                "NY.GDP.PCAP.KD") #GDP per capita
+
+wdi_parl_raw <- WDI(country = "all", indicators, extra = TRUE, start = 2000, end = 2019)
+
+
+```
+
+```{r Cleaning it}
+# Drop all lines for aggregates and select some specific variables
+
+wdi_clean <-  wdi_parl_raw %>% 
+    filter(region != "Aggregates") %>% 
+    select(iso2c, iso3c, country, year,
+           population = SP.POP.TOTL,
+           prop_women_parl = SG.GEN.PARL.ZS,
+           gdp_per_cap = NY.GDP.PCAP.KD,
+           region, income)
+
+```
+
+#### Creating a basic interactive chart
+
+```{r Creating a static plot}
+
+wdi_2019 <- wdi_clean %>% 
+    filter(year == 2019) %>% 
+    drop_na(prop_women_parl) %>% 
+    # Scale this down from 0-100 to 0-1 so that scales::percent() can format it as percent
+    mutate(prop_women_parl = prop_women_parl/100)
+
+static_plot <- ggplot(wdi_2019,
+                      aes(y = fct_rev(region), x = prop_women_parl, color = region)) +
+    geom_point(position = position_jitter(width = 0, height = 0.15, seed = 1234)) +
+    guides(color = FALSE) +
+    scale_x_continuous(labels = percent) +
+    scale_color_manual(values = c("#425300", "#e680ff", "#01bd71", "#ff3aad","#9f3e00", "#0146bf", "#671d56")) +
+    labs( x = "% women in parliament", y = NULL, caption = "Source: The World Bank") +
+    theme_bw()
+
+static_plot
+
+
+```
+```{r Make it interactive with ggplotly}
+ggplotly(static_plot)
+
+
+```
+
+When you hover any point it shows the tooltip with information about that point. It just show all the aes()
+elements for that point. If we want to add any new info in the tooltip, it's necessary to create a fake aes as below.
+
+```{r adding tooltip}
+
+static_plot_toolip <- ggplot(wdi_2019, 
+                             aes(y = fct_rev(region), x = prop_women_parl, color = region)) +
+    #this "text" fake aes could have any name.
+  geom_point(aes(text = country),
+             position = position_jitter(width = 0, height = 0.15, seed = 1234)) +
+  guides(color = "none") +
+  scale_x_continuous(labels = percent) +
+ 
+  scale_color_manual(values = c("#425300", "#e680ff", "#01bd71", "#ff3aad",
+                                "#9f3e00", "#0146bf", "#671d56")) +
+  labs(x = "% women in parliament", y = NULL, caption = "Source: The World Bank") +
+  theme_bw()
+
+static_plot_toolip
+```
+Even though we get a warning about the tooltip, we still get the desired plot.
+
+```{r}
+# Now the tooltip will show the info linked to the geom "text"
+
+ggplotly(static_plot_toolip, tooltip = "text")
+```
+
+
+#### Including more information in the tooltip
+
+
+For including more information in the tooltip, we must create a column with the info we want to show and then create a fake geom for calling it.
+
+```{r Creating a fancy label}
+wdi_2019 <- wdi_clean %>% 
+    filter(year == 2019) %>% 
+    drop_na(prop_women_parl) %>% 
+    mutate(prop_women_parl = prop_women_parl/100) %>% 
+    # <br> is a line break in HTML
+    mutate(fancy_label = paste0(country, "<br>",
+                                percent(prop_women_parl, accuracy = 0.1)," women in parliament"))
+
+
+```
+```{r Creating another static plot}
+
+static_plot_toolip_fancy <- ggplot(wdi_2019, 
+                                   aes(y = fct_rev(region), 
+                                       x = prop_women_parl, 
+                                       color = region)) +
+  geom_point(aes(text = fancy_label),position = position_jitter(width = 0, height = 0.15, seed = 1234)) +
+  guides(color = "none") +
+  scale_x_continuous(labels = percent) +
+  # I used https://medialab.github.io/iwanthue/ to generate these colors
+  scale_color_manual(values = c("#425300", "#e680ff", "#01bd71", "#ff3aad","#9f3e00", "#0146bf", "#671d56")) +
+  labs(x = "% women in parliament", y = NULL, caption = "Source: The World Bank") +
+  theme_bw()
+static_plot_toolip_fancy
+
+```
+
+```{r}
+ggplotly(static_plot_toolip_fancy, tooltip = "text")
+```
+
+
+### Another Resources
+
+**[Documentation for flexdashboard](https://pkgs.rstudio.com/flexdashboard/)**
+
+**[Chapter 5 of R Markdown book](https://bookdown.org/yihui/rmarkdown/dashboards.html)**
+
+**[Shiny like elements](https://www.andrewheiss.com/blog/2020/01/01/flexdashboard-dynamic-data/)**
+
+
+
+
+
+
+
+
+
