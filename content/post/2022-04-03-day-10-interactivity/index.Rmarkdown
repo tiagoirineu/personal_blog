@@ -212,6 +212,102 @@ ggplotly(static_plot_toolip_fancy, tooltip = "text")
 
 
 
+### Exercises
+
+For the exercises I'm going to use data extracted by the WDI package. A good resource for helping understand how to use it is this [site](http://svmiller.com/blog/2021/02/gank-world-bank-data-with-wdi-in-r/).
+
+#### Task 1: Interactive plots
+
+Create an interactive plot with ggplotly() from the plotly package. Modify the tooltip to show something more useful than every single mapped aesthetic.
+
+```{r Loading packages, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(plotly)
+library(WDI)
+
+
+```
+
+```{r loading the data, eval=FALSE}
+
+indicators <- c("agricultural_land_per" = "AG.LND.AGRI.ZS",
+                "forest_area_per" = "AG.LND.FRST.ZS",
+                "cereal_production_ha" = "AG.PRD.CREL.MT",
+                "gdp_per_capita" = "NY.GDP.PCAP.PP.KD",
+                "fertilizer_kg_ha" = "AG.CON.FERT.ZS"
+                )
+
+data <- WDI(indicator = indicators,
+            start = 1960,
+            end = 2020,
+            extra = TRUE) %>% as_tibble()
+
+data
+
+```
+
+I don't want to download this data every time I run this code. Therefore, I will save it locally.
+
+```{r, eval=FALSE}
+
+# I just needed this code evaluated once. After that, I already have the file locally saved.
+write.csv(data,"agri_data.csv")
+
+```
+```{r}
+data <- read.csv("agri_data.csv")
+data
+```
+
+
+My first idea would be to drop the aggregates, but first I want to see what kind of aggregation we have.
+
+```{r}
+clean_data <- data %>% 
+    filter(region != "Aggregates") %>% 
+    # Dropping the variables below
+    select(-c(capital,longitude,latitude, lending,X, iso2c)) 
+```
+
+
+
+
+```{r}
+br_plot <- 
+clean_data %>% 
+    filter(country == "Brazil") %>% 
+    ggplot(aes(x = agricultural_land_per/100, y =cereal_production_ha/1000)) +
+    geom_point(aes(text = year)) +
+    theme_minimal() +
+    scale_y_continuous(labels = comma) +
+    scale_x_continuous(labels = percent) +
+    labs(x = "Agricultural land",
+         y = "Cereal production (kg/ha in thousands)",
+         title = "Brazilian cereal production has been showing productivity gains") +
+    theme(plot.title = element_text(family = "roboto", face = "bold", size = 14, hjust = -0.45),
+          axis.title = element_text(family = "serif")
+          )
+
+br_plot
+```
+
+After the 27% threshold, there is no clear relationship between cereal production and how much of the Brazilian territory is directed to agricultural exploration. I believe that this is reflecting a productivity gain. One way for seeing this, is to compare the years. For two reasons, first Brazil is not reforesting any area. Besides that, it's reasonable to expect that productivity gains will be concentrated in recent years. By adding a tooltip with the year, it will be possible to know if my intuition is correct.
+
+```{r Making it responsive}
+ggplotly(br_plot, tooltip = "text")
+
+```
+
+Now, by passing over each data we can make it clear that my intuition was correct and in more recent years we saw a boom in productivity.
+
+
+
+
+
+
+
+
+
 
 
 
