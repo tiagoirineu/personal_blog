@@ -19,6 +19,14 @@ projects: []
 This lesson is about how to analyze time series in R.
 
 ### Example
+```{r, setup, include=FALSE}
+
+knitr::opts_chunk$set(
+    message = FALSE, warning = FALSE
+)
+```
+
+
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -41,26 +49,22 @@ fred_raw <- tq_get(c("RSXFSN", # Advance retail sales
                    from = "1990-01-01"
                      )
 ```
-It is not wise to access the FRED server everytime we run this script. Therefore, we will save the data we just downloaded for future use.
 
-```{r, eval=FALSE}
+
+```{r, eval=FALSE, include=FALSE}
 write_csv(fred_raw, "fred_raw.csv")
 
 ```
 
-```{r Loading the downloaded data}
+```{r Loading the downloaded data, include=FALSE}
 
 fred_raw <- read_csv("fred_raw.csv")
 
 ```
 
-```{r}
 
-fred_raw
-```
-Every data we pull using tidyquant comes in this format with three columns. If you remember, we downloaded multiple variables, and these variables are in the symbol column. While the price column will show the value associated with that symbol in a specific moment in time.
 
-If we know that some variables have values for the same time period, we can use pivot_wider to transform it to more familiar syle.
+Below, we make the data wider. 
 
 ```{r}
 fred_monthly_things <-  fred_raw %>% 
