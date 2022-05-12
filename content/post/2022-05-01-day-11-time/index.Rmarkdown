@@ -175,26 +175,28 @@ And that's it. A beautiful plot, ready for publication
 *A time series can be divided in three components: the trend, the seasonality, and a random aspect that it's not explained by either.* 
 
 **Example 1**
-```{r Preparing the dataset, warning=FALSE}
+```{r Preparing the dataset, warning=FALSE, message=FALSE}
 
 library(tsibble) #For embedding time things into data frames
 
 retail_sales <- fred_raw %>% 
     filter(symbol == "RSXFSN") %>% 
     mutate(year_month = yearmonth(date)) %>% 
-    as_tsibble(index = year_month) 
+    as_tsibble(index = year_month) # order it and treates like a time period
 retail_sales
 
 ```
 
 Now, we create a model for decomposing this time series. We will use the [STL decomposition](https://otexts.com/fpp2/stl.html)(**S**easonal and **T**rend decomposition **L**oess).
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(feasts) 
 
 retail_model <- retail_sales %>% 
     model(stl = STL(price))
 retail_model
 ```
+
+We created an object. Now, we must extract the components from it.
 
 ```{r Extracting the components}
 
@@ -204,7 +206,7 @@ retail_components
 ```
 
 
-But time series really need a plot to get a idea of what it's happening.
+Let's plot it, so we can have an idea about each component.
 
 ```{r}
 autoplot(retail_components) +
@@ -242,7 +244,7 @@ ggplot(retail_components,
 
 ```{r}
 retail_components_tidy <- retail_components %>% 
-    #Get rid of this colum %>% 
+    #Get rid of this column %>% 
     select(-season_adjust) %>% 
     
     # Combine all components in a column called components
@@ -290,10 +292,45 @@ ggplot(retail_components_tidy,
 ```
 
 
+### Exercises
+
+For the exercise I will replicate the example but using the Exchange Rate between Brazilian Reais and USD Dollars.
+
+```{r Loading the necessary packages}
+
+library(tidyverse)
+library(tidyquant)
+
+
+```
+```{r Reading the data, eval=FALSE}
+
+brl_usd <- tq_get("DEXBZUS", get = "economic.data", from = "2000-01-02")
+brl_usd 
+
+
+```
+```{r, eval=FALSE, echo=FALSE}
+write.csv(brl_usd, "brl_usd.csv")
+```
+
+```{r, echo=FALSE}
+brl_usd <- read.csv("brl_usd.csv")
+
+# By some reason, when saved as a csv the date column became character. Therefore, a mutate call is necessary
+brl_usd <- mutate( brl_usd, date = as.Date(date))
+brl_usd
+```
 
 
 
-
+```{r}
+ggplot(brl_usd, aes( x = date, y = price)) + 
+    geom_line(size = 0.7, color = "darkblue") +
+    labs(x = NULL, y = "brl/usd") +
+    theme_bw()
+```
+Now,make this plot beautiful. After that, decompose it.
 
 
 
