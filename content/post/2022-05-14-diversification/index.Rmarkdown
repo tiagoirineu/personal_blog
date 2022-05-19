@@ -1,0 +1,217 @@
+---
+title: Diversification
+author: Tiago Irineu
+date: '2022-05-14'
+slug: Markowitiz
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2022-05-14T23:45:13-03:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+## Diversificação
+
+Translating a Python Colab script, shared by profesor Daniel, to R.
+
+```{r Loading necessary packages, message = FALSE, warning=FALSE}
+library(tidyverse)
+library(tidyquant)
+library(tsibble)
+
+```
+
+```{r Downloading the data, eval=FALSE}
+
+tickers <- c("ITUB3.SA", 'BBAS3.SA', "ABEV3.SA", "MGLU3.SA", "VIIA3.SA", "VALE3.SA", "PETR4.SA", "ABEV3.SA", "BBDC4.SA", "GGBR4.SA", "CSNA3.SA", "COGN3.SA")
+
+data <-  tq_get( tickers, get = "stock.prices", from = "2019-04-29")  #Downloading the data from the above company
+
+head(data)
+
+```
+
+
+```{r, echo=FALSE}
+tickers <- c("ITUB3.SA", 'BBAS3.SA', "ABEV3.SA", "MGLU3.SA", "VIIA3.SA", "VALE3.SA", "PETR4.SA", "BBDC4.SA", "GGBR4.SA", "CSNA3.SA", "COGN3.SA")
+data <- read_csv("portfolio2.csv")
+
+head(data)
+
+```
+
+
+Building a plot showing the normalized prices.
+
+
+```{r}
+data %>% 
+    group_by(symbol) %>% 
+    mutate(norm_price = close/close[1]*100) %>% 
+    ggplot(aes(date, norm_price)) +
+    geom_line(aes(color = symbol), size = 0.8) +
+    labs(y = "Preços normalizados", x = NULL) +
+
+# Agora, irei aplicar algumas modificações estéticias. Apenas por gosto pessoal.
+    theme_bw( base_family = "Roboto Condensed") +
+ #   guides(color = FALSE) +
+  #  geom_text(data = filter(data, date == last(date)),aes(label = symbol)) +
+    theme(panel.grid =  element_blank(),
+          axis.title.y = element_text(face = "bold")
+    )
+
+```
+
+### Simulação de pesos para carteira de ativos
+
+
+
+
+```{r Creating log returns}
+# We create a grouped dataset, so every function is applied over each ticker (company)
+
+log_returns <- data %>% 
+    group_by(symbol) %>% 
+    #Daily log returns for the close price
+    tq_transmute(select = close, mutate_fun = dailyReturn, type = "log") %>% 
+    ungroup()
+
+str(log_returns)
+```
+```{r}
+mean_returns <- log_returns %>% 
+    group_by(symbol) %>% 
+    summarise(mean_return = mean(daily.returns))
+
+mean_returns
+```
+
+
+
+
+
+
+```{r Simulação de pesos para carteira de ativos}
+
+set.seed(1)
+nticks = length(tickers)
+nsample = 10000
+port_returns = c()
+port_vol = c()
+all_weights <- matrix(nrow=nsample, ncol = nticks)
+exp_return <- rep(0, nsample)
+exp_var <- rep(0, nsample)
+exp_std <- rep(0, nsample)
+sharpe <- matrix(0, nrow=10000, ncol=1)
+
+```
+ 
+```{r}
+weights <- runif(nticks, min= 0, max = 1) #Selects 10 floats from a uniform distribution between 0 and 1
+
+weights <- weights/sum(weights) # Normalizes the weights, so the elements sum up to 1
+m1 <- matrix(weights, ncol = nticks)
+```
+
+```{r Calculating the covariance}
+cov_returns <- log_returns %>% 
+pivot_wider(names_from = symbol, values_from = daily.returns) %>% 
+    select(-date) %>% 
+    cov()
+    ```
+
+
+
+
+```{r construindo o for loop}
+# Neste código, é calculado o índice de Sharpe, o retorno e o risco
+
+
+for (i in 1:nsample) {
+    
+    # Create, aleatory weights and normalize then to sum to 1
+    weights <- runif(nticks, min= 0,1)
+    weights <- weights/sum(weights)
+    
+    all_weights[i,] <- weights
+    
+    # Multiply by 250 so the returns and volatility are annualized
+    exp_return[i] <- sum(weights*mean_returns$mean_return)*250
+    
+    exp_var[i] = weights%*%((cov_returns*250)%*%weights)
+    
+    exp_std[i] = sqrt(exp_var[1]) #Standard deviation as the risk
+    sharpe[i,] <- exp_return[i]/exp_std[i] #Return/risk
+    
+    # Return and volatility vectors
+    
+    port_returns <- append(port_returns, exp_return[i])
+    port_vol <-  append(port_vol, exp_std[i])
+    
+}
+```
+
+### Defining the optimum portfolio as measured by the sharpe index
+
+
+
+```{r}
+all_weights <- as_tibble(all_weights) 
+names(all_weights) <- tickers
+
+```
+```{r}
+Sharpe <- as_tibble(sharpe)
+names(Sharpe) <- "sharpe"
+Sharpe
+```
+```{r}
+df <- cbind(all_weights,Sharpe)
+
+ordered_df <- df %>% 
+    arrange(desc(sharpe))
+```
+
+
+```{r}
+head(ordered_df)
+```
+
+```{r}
+ordered_df[1,1: 11]*100
+    
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

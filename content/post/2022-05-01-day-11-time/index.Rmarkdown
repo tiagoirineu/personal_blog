@@ -319,18 +319,50 @@ brl_usd <- read.csv("brl_usd.csv")
 
 # By some reason, when saved as a csv the date column became character. Therefore, a mutate call is necessary
 brl_usd <- mutate( brl_usd, date = as.Date(date))
-brl_usd
+str(brl_usd)
 ```
 
 
 
 ```{r}
 ggplot(brl_usd, aes( x = date, y = price)) + 
-    geom_line(size = 0.7, color = "darkblue") +
-    labs(x = NULL, y = "brl/usd") +
-    theme_bw()
+    geom_line(size = 0.75, color = "darkblue") +
+    labs(x = NULL, y = "Reais per dollar",
+         title = "BRL/USD Exchange rate") +
+    theme_bw(base_family = "Roboto Condensed")
 ```
-Now,make this plot beautiful. After that, decompose it.
 
+#### Decomposing the series
 
+For this step, we first create a column with year and month.
+
+```{r decomposing}
+library(tsibble)
+
+# There are no observation for the weekend. So I create artificial observations for the weekend, by repeating the last entry
+
+fx <- brl_usd %>%
+    as_tsibble(index = date) %>% 
+    fill_gaps() %>% 
+    tidyr::fill(price, .direction = "down")
+
+head(fx)
+```
+```{r}
+library(feasts)
+
+fx_model <- fx %>% 
+    model(stl = STL(price))
+fx_components <- components(fx_model)
+head(fx_components)
+
+```
+```{r}
+autoplot(fx_components) +
+    labs(x = NULL) +
+    theme_bw(base_family = "Roboto Condensed") +
+    theme(plot.title = element_text(face = "bold"))
+```
+At least for me, this was not as informative as the decomposition of retail sales discussed in the example.
+As it is just an exercise, I will let it here in this way.
 
