@@ -193,12 +193,23 @@ head(ordered_df)
 Below, we show the weights that create the portfolio with the biggest sharpe ratio.
 
 ```{r}
-ordered_df[1,1: 11]*100
+optimum <- ordered_df[1,1: 11]*100
+optimum
     
 ```
 
 
 
+```{r}
+
+df <- pivot_longer(optimum, cols = tickers, names_to = "company", values_to = "percentual") 
+
+df %>% 
+    ggplot(aes(x="", y = percentual, fill = company)) + 
+    geom_bar(stat= "identity", color = "white") +
+    coord_polar("y", start = 0) +
+    theme_void()
+```
 
 
 
