@@ -16,7 +16,7 @@ image:
   preview_only: no
 projects: []
 ---
-## Diversificação
+## Diversification
 
 Translating a Python Colab script, shared by profesor Daniel, to R.
 
@@ -117,15 +117,22 @@ weights <- runif(nticks, min= 0, max = 1) #Selects 10 floats from a uniform dist
 
 weights <- weights/sum(weights) # Normalizes the weights, so the elements sum up to 1
 m1 <- matrix(weights, ncol = nticks)
+
+
 ```
+```{r}
+head(log_returns)
+```
+
+
 
 ```{r Calculating the covariance}
 cov_returns <- log_returns %>% 
-pivot_wider(names_from = symbol, values_from = daily.returns) %>% 
+    pivot_wider(names_from = symbol, values_from = daily.returns) %>%
     select(-date) %>% 
     cov()
-    ```
 
+```
 
 
 
@@ -182,6 +189,8 @@ ordered_df <- df %>%
 ```{r}
 head(ordered_df)
 ```
+
+Below, we show the weights that create the portfolio with the biggest sharpe ratio.
 
 ```{r}
 ordered_df[1,1: 11]*100
