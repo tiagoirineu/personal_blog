@@ -18,14 +18,31 @@ projects: []
 ---
 ## Diversification
 
-Translating a Python Colab script, shared by profesor Daniel, to R.
+
+### Introduction
+
+Abaixo, traduzo para o R um script em Python, compartilhado pelo professor Daniel Bergmann, no curso Fundamentos de métodos quantitativos aplicados a Risco, parte da especialização em Gestão de Risco pela Saint Paul e B3.
+
+Você pode acessar o código inicial clicando [aqui](https://colab.research.google.com/drive/1IyTmX8v9SWo6QvsgEv6YmhUhpVeR6L_A#scrollTo=dKORsyf9JAvs).
+
+É realizado um exercício de diversificação de carteira.
+
+*Iremos acessar as informações reais de um conjunto de ações listada na bolsa, e calcular o log-retorno diário. 
+
+*Simular 10.000 carteiras diferentes e no fim representar graficamente qual seria a carteira com maior sharpe, ou seja, com a melhor razão risco/retorno.
+
+### Diversification
+
+Primeiro, carregamos os dois pacotes que serão necessários. [Tidyverse](https://r4ds.had.co.nz/) para trabalhar com os dados e [tidyquant]() para baixar os dados financeiros e acessar algumas funções específicas para este tipo de dados.
 
 
 ```r
 library(tidyverse)
 library(tidyquant)
-library(tsibble)
 ```
+
+Para baixar os dados de uma empresa, precisamos de utilizar o seu ticker, o código pelo qual ela é conhecida na bolsa. 
+Abaixo, baixamos os dados e olhamos as primeiras do dataset.
 
 
 ```r
@@ -37,24 +54,6 @@ head(data)
 ```
 
 
-
-```
-## Rows: 9060 Columns: 8
-```
-
-```
-## -- Column specification --------------------------------------------------------
-## Delimiter: ","
-## chr  (1): symbol
-## dbl  (6): open, high, low, close, volume, adjusted
-## date (1): date
-```
-
-```
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
 
 ```
 ## # A tibble: 6 x 8
@@ -69,8 +68,7 @@ head(data)
 ```
 
 
-Building a plot showing the normalized prices.
-
+Abaixo, visualizamos os dados. Como pode haver uma grande diferença entre os preçõs das diferentes ações, normalizamos todos para 100 no início do período. Desta forma, o que estamos vendo é a performance dos papéis a partir da data inicial.Isto permite ter uma visão da performance relativa de cada ação.
 
 
 ```r
@@ -90,53 +88,16 @@ data %>%
     )
 ```
 
-```
-## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
-## found in Windows font database
-
-## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
-## found in Windows font database
-```
-
-```
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-```
-
-```
-## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
-```
-
-```
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-```
-
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
 
 ### Simulação de pesos para carteira de ativos
 
+Nosso objetivo é simular diferentes pesos e chegar a uma carteira hipotética que minimiza o índice Sharpe. 
+
+Para isto, iremos simular 10.000 carteiras diferentes, calcular retorno, volatilidade, e o indíce Sharpe para cada uma delas e por fim fazer um gráfico de pizza mostrando a carteira.
 
 
+#### Calculando o log returns das ações
 
 
 ```r
@@ -157,6 +118,9 @@ str(log_returns)
 ##  $ date         : Date[1:8305], format: "2019-04-29" "2019-04-30" ...
 ##  $ daily.returns: num [1:8305] 0 0 0.00374 -0.00579 -0.02105 ...
 ```
+
+Abaixo, calculamos os retornos médios das ações.
+
 
 ```r
 mean_returns <- log_returns %>% 
@@ -185,7 +149,8 @@ mean_returns
 
 
 
-
+Abaixo, é feito um pré-trabalho que é necessário para a simulação. 
+Iniciamos vetores e matrizes que serão utilizados para "guardar" os resultados da simulação.
 
 
 
@@ -204,27 +169,12 @@ sharpe <- matrix(0, nrow=10000, ncol=1)
  
 
 ```r
-weights <- runif(nticks, min= 0, max = 1) #Selects 10 floats from a uniform distribution between 0 and 1
+weights <- runif(nticks, min= 0, max = 1) #Seleciona nticks float points, de uma distribuição uniforme entre 0 e 1.
 
-weights <- weights/sum(weights) # Normalizes the weights, so the elements sum up to 1
-m1 <- matrix(weights, ncol = nticks)
-```
-
-```r
-head(log_returns)
+weights <- weights/sum(weights) # Normaliza os pesos de tal forma que some até 1. Para garantir que os pesos façam sentido.
+#m1 <- matrix(weights, ncol = nticks)
 ```
 
-```
-## # A tibble: 6 x 3
-##   symbol   date       daily.returns
-##   <chr>    <date>             <dbl>
-## 1 ITUB3.SA 2019-04-29       0      
-## 2 ITUB3.SA 2019-04-30       0      
-## 3 ITUB3.SA 2019-05-02       0.00374
-## 4 ITUB3.SA 2019-05-03      -0.00579
-## 5 ITUB3.SA 2019-05-06      -0.0210 
-## 6 ITUB3.SA 2019-05-07      -0.00595
-```
 
 
 
@@ -377,7 +327,7 @@ df %>%
     theme_void()
 ```
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
 
 
 

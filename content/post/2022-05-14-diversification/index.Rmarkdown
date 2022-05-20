@@ -18,14 +18,31 @@ projects: []
 ---
 ## Diversification
 
-Translating a Python Colab script, shared by profesor Daniel, to R.
+
+### Introduction
+
+Abaixo, traduzo para o R um script em Python, compartilhado pelo professor Daniel Bergmann, no curso Fundamentos de métodos quantitativos aplicados a Risco, parte da especialização em Gestão de Risco pela Saint Paul e B3.
+
+Você pode acessar o código inicial clicando [aqui](https://colab.research.google.com/drive/1IyTmX8v9SWo6QvsgEv6YmhUhpVeR6L_A#scrollTo=dKORsyf9JAvs).
+
+É realizado um exercício de diversificação de carteira.
+
+*Iremos acessar as informações reais de um conjunto de ações listada na bolsa, e calcular o log-retorno diário. 
+
+*Simular 10.000 carteiras diferentes e no fim representar graficamente qual seria a carteira com maior sharpe, ou seja, com a melhor razão risco/retorno.
+
+### Diversification
+
+Primeiro, carregamos os dois pacotes que serão necessários. [Tidyverse](https://r4ds.had.co.nz/) para trabalhar com os dados e [tidyquant]() para baixar os dados financeiros e acessar algumas funções específicas para este tipo de dados.
 
 ```{r Loading necessary packages, message = FALSE, warning=FALSE}
 library(tidyverse)
 library(tidyquant)
-library(tsibble)
 
 ```
+
+Para baixar os dados de uma empresa, precisamos de utilizar o seu ticker, o código pelo qual ela é conhecida na bolsa. 
+Abaixo, baixamos os dados e olhamos as primeiras do dataset.
 
 ```{r Downloading the data, eval=FALSE}
 
@@ -38,7 +55,7 @@ head(data)
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 tickers <- c("ITUB3.SA", 'BBAS3.SA', "ABEV3.SA", "MGLU3.SA", "VIIA3.SA", "VALE3.SA", "PETR4.SA", "BBDC4.SA", "GGBR4.SA", "CSNA3.SA", "COGN3.SA")
 data <- read_csv("portfolio2.csv")
 
@@ -47,10 +64,9 @@ head(data)
 ```
 
 
-Building a plot showing the normalized prices.
+Abaixo, visualizamos os dados. Como pode haver uma grande diferença entre os preçõs das diferentes ações, normalizamos todos para 100 no início do período. Desta forma, o que estamos vendo é a performance dos papéis a partir da data inicial.Isto permite ter uma visão da performance relativa de cada ação.
 
-
-```{r}
+```{r, warning=FALSE, message=FALSE}
 data %>% 
     group_by(symbol) %>% 
     mutate(norm_price = close/close[1]*100) %>% 
@@ -70,8 +86,12 @@ data %>%
 
 ### Simulação de pesos para carteira de ativos
 
+Nosso objetivo é simular diferentes pesos e chegar a uma carteira hipotética que minimiza o índice Sharpe. 
+
+Para isto, iremos simular 10.000 carteiras diferentes, calcular retorno, volatilidade, e o indíce Sharpe para cada uma delas e por fim fazer um gráfico de pizza mostrando a carteira.
 
 
+#### Calculando o log returns das ações
 
 ```{r Creating log returns}
 # We create a grouped dataset, so every function is applied over each ticker (company)
@@ -84,6 +104,9 @@ log_returns <- data %>%
 
 str(log_returns)
 ```
+
+Abaixo, calculamos os retornos médios das ações.
+
 ```{r}
 mean_returns <- log_returns %>% 
     group_by(symbol) %>% 
@@ -94,10 +117,11 @@ mean_returns
 
 
 
+Abaixo, é feito um pré-trabalho que é necessário para a simulação. 
+Iniciamos vetores e matrizes que serão utilizados para "guardar" os resultados da simulação.
 
 
-
-```{r Simulação de pesos para carteira de ativos}
+```{r}
 
 set.seed(1)
 nticks = length(tickers)
@@ -112,17 +136,17 @@ sharpe <- matrix(0, nrow=10000, ncol=1)
 
 ```
  
-```{r}
-weights <- runif(nticks, min= 0, max = 1) #Selects 10 floats from a uniform distribution between 0 and 1
+```{r Creating the weights}
 
-weights <- weights/sum(weights) # Normalizes the weights, so the elements sum up to 1
-m1 <- matrix(weights, ncol = nticks)
+
+weights <- runif(nticks, min= 0, max = 1) #Seleciona nticks float points, de uma distribuição uniforme entre 0 e 1.
+
+weights <- weights/sum(weights) # Normaliza os pesos de tal forma que some até 1. Para garantir que os pesos façam sentido.
+#m1 <- matrix(weights, ncol = nticks)
 
 
 ```
-```{r}
-head(log_returns)
-```
+
 
 
 
