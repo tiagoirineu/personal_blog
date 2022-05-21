@@ -16,24 +16,24 @@ image:
   preview_only: no
 projects: []
 ---
-## Diversification
+## Diversificação
 
 
-### Introduction
+### Introdução
 
-Abaixo, traduzo para o R um script em Python, compartilhado pelo professor Daniel Bergmann, no curso Fundamentos de métodos quantitativos aplicados a Risco, parte da especialização em Gestão de Risco pela Saint Paul e B3.
+Abaixo, traduzo para o R um script em Python compartilhado pelo professor Daniel Bergmann, no curso Fundamentos de métodos quantitativos aplicados a Risco, parte da especialização em Gestão de Risco pela Saint Paul e B3.
 
-Você pode acessar o código inicial clicando [aqui](https://colab.research.google.com/drive/1IyTmX8v9SWo6QvsgEv6YmhUhpVeR6L_A#scrollTo=dKORsyf9JAvs).
+Você pode acessar o código original [aqui](https://colab.research.google.com/drive/1IyTmX8v9SWo6QvsgEv6YmhUhpVeR6L_A#scrollTo=dKORsyf9JAvs).
 
 É realizado um exercício de diversificação de carteira.
 
-*Iremos acessar as informações reais de um conjunto de ações listada na bolsa, e calcular o log-retorno diário. 
+* Iremos acessar as informações reais de um conjunto de ações listada na bolsa e calcular o log-retorno diário. 
 
-*Simular 10.000 carteiras diferentes e no fim representar graficamente qual seria a carteira com maior sharpe, ou seja, com a melhor razão risco/retorno.
+* Simular 10.000 carteiras diferentes e no fim representar graficamente qual seria a carteira com maior sharpe, ou seja, com a melhor razão risco/retorno.
 
 ### Diversification
 
-Primeiro, carregamos os dois pacotes que serão necessários. [Tidyverse](https://r4ds.had.co.nz/) para trabalhar com os dados e [tidyquant]() para baixar os dados financeiros e acessar algumas funções específicas para este tipo de dados.
+Primeiro, precisamos carregar os pacote que iremos utilizar durante a análise. [Tidyverse](https://r4ds.had.co.nz/) para trabalhar com os dados e [tidyquant](https://business-science.github.io/tidyquant/) para baixar os dados financeiros e acessar algumas funções específicas para este tipo de dados.
 
 ```{r Loading necessary packages, message = FALSE, warning=FALSE}
 library(tidyverse)
@@ -41,8 +41,7 @@ library(tidyquant)
 
 ```
 
-Para baixar os dados de uma empresa, precisamos de utilizar o seu ticker, o código pelo qual ela é conhecida na bolsa. 
-Abaixo, baixamos os dados e olhamos as primeiras do dataset.
+Para baixar os dados utilizamos a função *tq_get*. Identificamos as empresas para as quais queremos baixar os dados a partir dos tickers, os códigos pelos quais elas são representadas na bolsa.
 
 ```{r Downloading the data, eval=FALSE}
 
@@ -64,7 +63,9 @@ head(data)
 ```
 
 
-Abaixo, visualizamos os dados. Como pode haver uma grande diferença entre os preçõs das diferentes ações, normalizamos todos para 100 no início do período. Desta forma, o que estamos vendo é a performance dos papéis a partir da data inicial.Isto permite ter uma visão da performance relativa de cada ação.
+Abaixo, visualizamos os dados.
+
+Normalizamos os preçoos de todas as ações, de tal forma,que visualizamos a performance dos papéis a partir da data inicial.Isto permite ter uma visão da performance relativa de cada ação.
 
 ```{r, warning=FALSE, message=FALSE}
 data %>% 
@@ -86,9 +87,9 @@ data %>%
 
 ### Simulação de pesos para carteira de ativos
 
-Nosso objetivo é simular diferentes pesos e chegar a uma carteira hipotética que minimiza o índice Sharpe. 
+Nosso objetivo é simular diferentes pesos e chegar a uma carteira hipotética que maximiza o índice Sharpe. 
 
-Para isto, iremos simular 10.000 carteiras diferentes, calcular retorno, volatilidade, e o indíce Sharpe para cada uma delas e por fim fazer um gráfico de pizza mostrando a carteira.
+Para isto, iremos simular 10.000 carteiras diferentes, calcular retorno, volatilidade, e o indíce Sharpe para cada uma delas e por fim fazer um gráfico de pizza apresentando a carteira com o maior índice de Sharpe.
 
 
 #### Calculando o log returns das ações
@@ -116,14 +117,18 @@ mean_returns
 ```
 
 
+#### Simulação de 10.000 carteiras 
 
-Abaixo, é feito um pré-trabalho que é necessário para a simulação. 
-Iniciamos vetores e matrizes que serão utilizados para "guardar" os resultados da simulação.
+Iremos simular 10.000 combinações diferentes dos 11 ativos para os quais baixamos as informações.
+
+Abaixo, iniciamos alguns vetores e matrizes que iremos utilizar para guardar as informações das simulações que iremos realizar. 
 
 
 ```{r}
 
-set.seed(1)
+set.seed(1) #define o parâmetro para a simulação. Importante para garantir reprodutibilidade da análise.
+
+
 nticks = length(tickers)
 nsample = 10000
 port_returns = c()
@@ -136,20 +141,6 @@ sharpe <- matrix(0, nrow=10000, ncol=1)
 
 ```
  
-```{r Creating the weights}
-
-
-weights <- runif(nticks, min= 0, max = 1) #Seleciona nticks float points, de uma distribuição uniforme entre 0 e 1.
-
-weights <- weights/sum(weights) # Normaliza os pesos de tal forma que some até 1. Para garantir que os pesos façam sentido.
-#m1 <- matrix(weights, ncol = nticks)
-
-
-```
-
-
-
-
 ```{r Calculating the covariance}
 cov_returns <- log_returns %>% 
     pivot_wider(names_from = symbol, values_from = daily.returns) %>%
@@ -158,10 +149,9 @@ cov_returns <- log_returns %>%
 
 ```
 
+No código abaixo, realizamos de fato a simulação das carteiras e guardamos os resultados calculados para o indíce de sharpe, retornos, e volatilidade.
 
-
-```{r construindo o for loop}
-# Neste código, é calculado o índice de Sharpe, o retorno e o risco
+```{r Simulação das 10.000 carteiras}
 
 
 for (i in 1:nsample) {
@@ -188,7 +178,7 @@ for (i in 1:nsample) {
 }
 ```
 
-### Defining the optimum portfolio as measured by the sharpe index
+### Definindo o portfolio que maximiza o índice de Sharpe
 
 
 
@@ -214,21 +204,10 @@ ordered_df <- df %>%
 head(ordered_df)
 ```
 
-Below, we show the weights that create the portfolio with the biggest sharpe ratio.
-
+Abaixo, selecionamos o portfolio com o maior indíce de Sharpe e o representamos com um gráfico de pizza.
 ```{r}
-optimum <- ordered_df[1,1: 11]*100
-optimum
-    
-```
-
-
-
-```{r}
-
-df <- pivot_longer(optimum, cols = tickers, names_to = "company", values_to = "percentual") 
-
-df %>% 
+optimum <- ordered_df[1,1: 11]*100 %>% 
+    pivot_longer(cols = tickers, names_to = "company", values_to = "percentual") %>% 
     ggplot(aes(x="", y = percentual, fill = company)) + 
     geom_bar(stat= "identity", color = "white") +
     coord_polar("y", start = 0) +

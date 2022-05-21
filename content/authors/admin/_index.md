@@ -13,10 +13,9 @@ education:
 email: "tiagoirineu@outlook.com"
 highlight_name: true
 interests:
-- Data analysis
-- Risk
-- Economics 
-- Probability
+- data analysis
+- financial risk
+- management
 
 
 social:
@@ -41,7 +40,7 @@ title: Tiago Irineu
 
 Hello, I am Tiago Irineu.
 
-I'm a master in Economics and I work as a financial analyst.
+I'm a master in Economics and I work in corporate finance.
 
 Right now my focus is in mastering R and learning all the details related to financial risk management. 
 

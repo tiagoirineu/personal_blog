@@ -16,24 +16,24 @@ image:
   preview_only: no
 projects: []
 ---
-## Diversification
+## Diversificação
 
 
-### Introduction
+### Introdução
 
-Abaixo, traduzo para o R um script em Python, compartilhado pelo professor Daniel Bergmann, no curso Fundamentos de métodos quantitativos aplicados a Risco, parte da especialização em Gestão de Risco pela Saint Paul e B3.
+Abaixo, traduzo para o R um script em Python compartilhado pelo professor Daniel Bergmann, no curso Fundamentos de métodos quantitativos aplicados a Risco, parte da especialização em Gestão de Risco pela Saint Paul e B3.
 
-Você pode acessar o código inicial clicando [aqui](https://colab.research.google.com/drive/1IyTmX8v9SWo6QvsgEv6YmhUhpVeR6L_A#scrollTo=dKORsyf9JAvs).
+Você pode acessar o código original [aqui](https://colab.research.google.com/drive/1IyTmX8v9SWo6QvsgEv6YmhUhpVeR6L_A#scrollTo=dKORsyf9JAvs).
 
 É realizado um exercício de diversificação de carteira.
 
-*Iremos acessar as informações reais de um conjunto de ações listada na bolsa, e calcular o log-retorno diário. 
+* Iremos acessar as informações reais de um conjunto de ações listada na bolsa e calcular o log-retorno diário. 
 
-*Simular 10.000 carteiras diferentes e no fim representar graficamente qual seria a carteira com maior sharpe, ou seja, com a melhor razão risco/retorno.
+* Simular 10.000 carteiras diferentes e no fim representar graficamente qual seria a carteira com maior sharpe, ou seja, com a melhor razão risco/retorno.
 
 ### Diversification
 
-Primeiro, carregamos os dois pacotes que serão necessários. [Tidyverse](https://r4ds.had.co.nz/) para trabalhar com os dados e [tidyquant]() para baixar os dados financeiros e acessar algumas funções específicas para este tipo de dados.
+Primeiro, precisamos carregar os pacote que iremos utilizar durante a análise. [Tidyverse](https://r4ds.had.co.nz/) para trabalhar com os dados e [tidyquant](https://business-science.github.io/tidyquant/) para baixar os dados financeiros e acessar algumas funções específicas para este tipo de dados.
 
 
 ```r
@@ -41,8 +41,7 @@ library(tidyverse)
 library(tidyquant)
 ```
 
-Para baixar os dados de uma empresa, precisamos de utilizar o seu ticker, o código pelo qual ela é conhecida na bolsa. 
-Abaixo, baixamos os dados e olhamos as primeiras do dataset.
+Para baixar os dados utilizamos a função *tq_get*. Identificamos as empresas para as quais queremos baixar os dados a partir dos tickers, os códigos pelos quais elas são representadas na bolsa.
 
 
 ```r
@@ -68,7 +67,9 @@ head(data)
 ```
 
 
-Abaixo, visualizamos os dados. Como pode haver uma grande diferença entre os preçõs das diferentes ações, normalizamos todos para 100 no início do período. Desta forma, o que estamos vendo é a performance dos papéis a partir da data inicial.Isto permite ter uma visão da performance relativa de cada ação.
+Abaixo, visualizamos os dados.
+
+Normalizamos os preçoos de todas as ações, de tal forma,que visualizamos a performance dos papéis a partir da data inicial.Isto permite ter uma visão da performance relativa de cada ação.
 
 
 ```r
@@ -92,9 +93,9 @@ data %>%
 
 ### Simulação de pesos para carteira de ativos
 
-Nosso objetivo é simular diferentes pesos e chegar a uma carteira hipotética que minimiza o índice Sharpe. 
+Nosso objetivo é simular diferentes pesos e chegar a uma carteira hipotética que maximiza o índice Sharpe. 
 
-Para isto, iremos simular 10.000 carteiras diferentes, calcular retorno, volatilidade, e o indíce Sharpe para cada uma delas e por fim fazer um gráfico de pizza mostrando a carteira.
+Para isto, iremos simular 10.000 carteiras diferentes, calcular retorno, volatilidade, e o indíce Sharpe para cada uma delas e por fim fazer um gráfico de pizza apresentando a carteira com o maior índice de Sharpe.
 
 
 #### Calculando o log returns das ações
@@ -148,14 +149,18 @@ mean_returns
 ```
 
 
+#### Simulação de 10.000 carteiras 
 
-Abaixo, é feito um pré-trabalho que é necessário para a simulação. 
-Iniciamos vetores e matrizes que serão utilizados para "guardar" os resultados da simulação.
+Iremos simular 10.000 combinações diferentes dos 11 ativos para os quais baixamos as informações.
+
+Abaixo, iniciamos alguns vetores e matrizes que iremos utilizar para guardar as informações das simulações que iremos realizar. 
 
 
 
 ```r
-set.seed(1)
+set.seed(1) #define o parâmetro para a simulação. Importante para garantir reprodutibilidade da análise.
+
+
 nticks = length(tickers)
 nsample = 10000
 port_returns = c()
@@ -169,17 +174,6 @@ sharpe <- matrix(0, nrow=10000, ncol=1)
  
 
 ```r
-weights <- runif(nticks, min= 0, max = 1) #Seleciona nticks float points, de uma distribuição uniforme entre 0 e 1.
-
-weights <- weights/sum(weights) # Normaliza os pesos de tal forma que some até 1. Para garantir que os pesos façam sentido.
-#m1 <- matrix(weights, ncol = nticks)
-```
-
-
-
-
-
-```r
 cov_returns <- log_returns %>% 
     pivot_wider(names_from = symbol, values_from = daily.returns) %>%
     select(-date) %>% 
@@ -190,9 +184,6 @@ cov_returns <- log_returns %>%
 
 
 ```r
-# Neste código, é calculado o índice de Sharpe, o retorno e o risco
-
-
 for (i in 1:nsample) {
     
     # Create, aleatory weights and normalize then to sum to 1
@@ -217,7 +208,7 @@ for (i in 1:nsample) {
 }
 ```
 
-### Defining the optimum portfolio as measured by the sharpe index
+### Definindo o portfolio que maximiza o índice de Sharpe
 
 
 
@@ -247,16 +238,16 @@ Sharpe
 ## # A tibble: 10,000 x 1
 ##      sharpe
 ##       <dbl>
-##  1 -0.103  
-##  2 -0.139  
-##  3 -0.156  
-##  4 -0.100  
-##  5 -0.0800 
-##  6 -0.136  
-##  7 -0.123  
-##  8 -0.00552
-##  9 -0.00569
-## 10 -0.219  
+##  1 -0.220  
+##  2 -0.111  
+##  3 -0.150  
+##  4 -0.169  
+##  5 -0.108  
+##  6 -0.0863 
+##  7 -0.147  
+##  8 -0.132  
+##  9 -0.00595
+## 10 -0.00613
 ## # ... with 9,990 more rows
 ```
 
@@ -282,16 +273,15 @@ head(ordered_df)
 ## 5 0.16256247 0.03173938 0.025036994 0.021391028 0.06983878 0.19735648
 ## 6 0.04063537 0.05727850 0.095400921 0.032135026 0.21627621 0.02781771
 ##     PETR4.SA   BBDC4.SA   GGBR4.SA  CSNA3.SA   COGN3.SA    sharpe
-## 1 0.02415015 0.03144297 0.05008969 0.1778865 0.01350258 0.1452811
-## 2 0.02407536 0.02168471 0.20258521 0.1739842 0.00570458 0.1402076
-## 3 0.01223440 0.02083686 0.12228837 0.1929037 0.03946264 0.1297514
-## 4 0.01289657 0.06127633 0.15427796 0.1086115 0.08618831 0.1232454
-## 5 0.03595600 0.05193993 0.15358300 0.2025529 0.04804310 0.1204598
-## 6 0.01927328 0.01339078 0.09585353 0.3846369 0.01730179 0.1165953
+## 1 0.02415015 0.03144297 0.05008969 0.1778865 0.01350258 0.1566250
+## 2 0.02407536 0.02168471 0.20258521 0.1739842 0.00570458 0.1511554
+## 3 0.01223440 0.02083686 0.12228837 0.1929037 0.03946264 0.1398827
+## 4 0.01289657 0.06127633 0.15427796 0.1086115 0.08618831 0.1328687
+## 5 0.03595600 0.05193993 0.15358300 0.2025529 0.04804310 0.1298657
+## 6 0.01927328 0.01339078 0.09585353 0.3846369 0.01730179 0.1256994
 ```
 
-Below, we show the weights that create the portfolio with the biggest sharpe ratio.
-
+Abaixo, selecionamos o portfolio com o maior indíce de Sharpe e o representamos com um gráfico de pizza.
 
 ```r
 optimum <- ordered_df[1,1: 11]*100
