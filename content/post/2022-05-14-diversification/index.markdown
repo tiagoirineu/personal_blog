@@ -127,7 +127,7 @@ Abaixo, calculamos os retornos médios das ações.
 mean_returns <- log_returns %>% 
     group_by(symbol) %>% 
     summarise(mean_return = mean(daily.returns))
-
+# Abaixo, vamos checar os valores médios
 mean_returns
 ```
 
@@ -180,7 +180,7 @@ cov_returns <- log_returns %>%
     cov()
 ```
 
-
+No código abaixo, realizamos de fato a simulação das carteiras e guardamos os resultados calculados para o indíce de sharpe, retornos, e volatilidade.
 
 
 ```r
@@ -208,98 +208,37 @@ for (i in 1:nsample) {
 }
 ```
 
-### Definindo o portfolio que maximiza o índice de Sharpe
+### Encontrando o portfolio que maximiza o índice de Sharpe
 
-
+Abaixo, combinamos os pesos com os seus sharpes equivalentes. A partir disto, vamos criar um ordered arranjado. 
 
 
 ```r
 all_weights <- as_tibble(all_weights) 
-```
-
-```
-## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
-## Using compatibility `.name_repair`.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
-```
-
-```r
 names(all_weights) <- tickers
-```
 
-```r
 Sharpe <- as_tibble(sharpe)
 names(Sharpe) <- "sharpe"
-Sharpe
-```
 
-```
-## # A tibble: 10,000 x 1
-##      sharpe
-##       <dbl>
-##  1 -0.220  
-##  2 -0.111  
-##  3 -0.150  
-##  4 -0.169  
-##  5 -0.108  
-##  6 -0.0863 
-##  7 -0.147  
-##  8 -0.132  
-##  9 -0.00595
-## 10 -0.00613
-## # ... with 9,990 more rows
-```
-
-```r
 df <- cbind(all_weights,Sharpe)
 
+#Ordena o dataset de acordo com o índice de sharpe. Colocando o portfolio com o maior índice como o primeio
 ordered_df <- df %>% 
     arrange(desc(sharpe))
 ```
 
 
-
-```r
-head(ordered_df)
-```
-
-```
-##     ITUB3.SA   BBAS3.SA    ABEV3.SA    MGLU3.SA   VIIA3.SA   VALE3.SA
-## 1 0.13252856 0.01230708 0.056065353 0.034909682 0.24259336 0.22452407
-## 2 0.12737715 0.06776101 0.093144720 0.003120477 0.09373137 0.18683119
-## 3 0.20247721 0.01540019 0.052897277 0.010888195 0.15953751 0.17107368
-## 4 0.03379910 0.12159538 0.008037548 0.010781633 0.19279428 0.20974137
-## 5 0.16256247 0.03173938 0.025036994 0.021391028 0.06983878 0.19735648
-## 6 0.04063537 0.05727850 0.095400921 0.032135026 0.21627621 0.02781771
-##     PETR4.SA   BBDC4.SA   GGBR4.SA  CSNA3.SA   COGN3.SA    sharpe
-## 1 0.02415015 0.03144297 0.05008969 0.1778865 0.01350258 0.1566250
-## 2 0.02407536 0.02168471 0.20258521 0.1739842 0.00570458 0.1511554
-## 3 0.01223440 0.02083686 0.12228837 0.1929037 0.03946264 0.1398827
-## 4 0.01289657 0.06127633 0.15427796 0.1086115 0.08618831 0.1328687
-## 5 0.03595600 0.05193993 0.15358300 0.2025529 0.04804310 0.1298657
-## 6 0.01927328 0.01339078 0.09585353 0.3846369 0.01730179 0.1256994
-```
-
-Abaixo, selecionamos o portfolio com o maior indíce de Sharpe e o representamos com um gráfico de pizza.
-
-```r
-optimum <- ordered_df[1,1: 11]*100
-optimum
-```
-
-```
-##   ITUB3.SA BBAS3.SA ABEV3.SA MGLU3.SA VIIA3.SA VALE3.SA PETR4.SA BBDC4.SA
-## 1 13.25286 1.230708 5.606535 3.490968 24.25934 22.45241 2.415015 3.144297
-##   GGBR4.SA CSNA3.SA COGN3.SA
-## 1 5.008969 17.78865 1.350258
-```
-
-
+Abaixo, selecionamos o portfolio com o maior indíce de Sharpe e o visualizamos com um gráfico de pizza.
 
 
 ```r
-df <- pivot_longer(optimum, cols = tickers, names_to = "company", values_to = "percentual") 
+tibble(ordered_df[1,1: 11]*100) %>% 
+    pivot_longer(cols = tickers, names_to = "empresa", values_to = "percentual") %>% 
+    ggplot(aes(x="", y = percentual, fill = empresa)) + 
+    geom_bar(stat= "identity", color = "white") +
+    coord_polar("y", start = 0) +
+    theme_void() +
+    labs(title = "Portfolio com o maior índice Sharpe")
 ```
 
 ```
@@ -309,15 +248,7 @@ df <- pivot_longer(optimum, cols = tickers, names_to = "company", values_to = "p
 ## This message is displayed once per session.
 ```
 
-```r
-df %>% 
-    ggplot(aes(x="", y = percentual, fill = company)) + 
-    geom_bar(stat= "identity", color = "white") +
-    coord_polar("y", start = 0) +
-    theme_void()
-```
-
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" />
 
 
 

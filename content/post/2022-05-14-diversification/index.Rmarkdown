@@ -112,7 +112,7 @@ Abaixo, calculamos os retornos médios das ações.
 mean_returns <- log_returns %>% 
     group_by(symbol) %>% 
     summarise(mean_return = mean(daily.returns))
-
+# Abaixo, vamos checar os valores médios
 mean_returns
 ```
 
@@ -178,40 +178,36 @@ for (i in 1:nsample) {
 }
 ```
 
-### Definindo o portfolio que maximiza o índice de Sharpe
+### Encontrando o portfolio que maximiza o índice de Sharpe
 
+Abaixo, combinamos os pesos com os seus sharpes equivalentes. A partir disto, vamos criar um ordered arranjado. 
 
-
-```{r}
+```{r, warning=FALSE}
 all_weights <- as_tibble(all_weights) 
 names(all_weights) <- tickers
 
-```
-```{r}
 Sharpe <- as_tibble(sharpe)
 names(Sharpe) <- "sharpe"
-Sharpe
-```
-```{r}
+
 df <- cbind(all_weights,Sharpe)
 
+#Ordena o dataset de acordo com o índice de sharpe. Colocando o portfolio com o maior índice como o primeio
 ordered_df <- df %>% 
     arrange(desc(sharpe))
 ```
 
 
-```{r}
-head(ordered_df)
-```
+Abaixo, selecionamos o portfolio com o maior indíce de Sharpe e o visualizamos com um gráfico de pizza.
 
-Abaixo, selecionamos o portfolio com o maior indíce de Sharpe e o representamos com um gráfico de pizza.
 ```{r}
-optimum <- ordered_df[1,1: 11]*100 %>% 
-    pivot_longer(cols = tickers, names_to = "company", values_to = "percentual") %>% 
-    ggplot(aes(x="", y = percentual, fill = company)) + 
+tibble(ordered_df[1,1: 11]*100) %>% 
+    pivot_longer(cols = tickers, names_to = "empresa", values_to = "percentual") %>% 
+    ggplot(aes(x="", y = percentual, fill = empresa)) + 
     geom_bar(stat= "identity", color = "white") +
     coord_polar("y", start = 0) +
-    theme_void()
+    theme_void() +
+    labs(title = "Portfolio com o maior índice Sharpe")
+
 ```
 
 
