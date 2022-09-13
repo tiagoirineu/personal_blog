@@ -1,0 +1,37 @@
+---
+title: 'Diversification: The tidy way'
+author: Tiago Irineu
+date: '2022-05-22'
+slug: diversification-the-tidy-way
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2022-05-22T18:33:23-03:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+# Diversification: The tidy way
+
+In this notebook I rewrite the code available [here]() in a tidier way. In others words, the goal is to write it using better the R tools.
+
+```{r Loading the packages, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(tidyquant)
+```
+
+First, let's download the data we are going to use for the analysis.
+
+```{r}
+tickers <- c("ITUB3.SA", 'BBAS3.SA', "ABEV3.SA", "MGLU3.SA", "VIIA3.SA", "VALE3.SA", "PETR4.SA", "ABEV3.SA", "BBDC4.SA", "GGBR4.SA", "CSNA3.SA", "COGN3.SA")
+
+data <-  tq_get( tickers, get = "stock.prices", from = "2019-01-02")  #Downloading the data from the above company
+
+glimpse(data)
+```
+

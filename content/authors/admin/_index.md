@@ -13,9 +13,9 @@ education:
 email: "tiagoirineu@outlook.com"
 highlight_name: true
 interests:
-- data analysis
-- financial risk
-- management
+- Data analysis
+- Financial risk
+- Management
 
 
 social:

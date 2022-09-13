@@ -6,7 +6,7 @@ slug: mini-project-1-rat-sightings
 categories: []
 tags: []
 subtitle: ''
-summary: 'In this project I analyze the data regarding rat sightins in New York. The data range is from 2015 to 2017'
+summary: 'Analysis of rat sightins in New York from 2010 to 2017.'
 authors: []
 lastmod: '2021-12-28T21:05:01-03:00'
 featured: no
@@ -19,11 +19,13 @@ projects: []
 
 ### Rats in New York
 
-This is the documentation for my final plot.
+In this little project we will create a plot using a dataset containing information about Rat Sighting in New York, from 2010 to 2017. The end result will be a plot, but in the post below we will work through each step. From cleaning the data to formatting the plot. Let's begin.
 
-Instead of using the basic script shared by the teacher, I chose to work from a clean scrip. So I could at least think a bit for myself.
 
-First, I will load the data and apply the function *clean_names* from the **janitor** package. This function transform all column names to snake_case.
+#### Wrangling the data
+
+
+I will begin by loading the necessary packages and reading the data. I will use the function *clean_names* from the **janitor** package, so all column names will follow the same *snake_case* pattern.
 
 
 ```r
@@ -40,12 +42,10 @@ rats <-  read_csv("C:/Users/tiago/OneDrive/datasets/data_viz-course/Rat_Sighting
 
 rats <- janitor::clean_names(rats)
 ```
-Now, I have to prepare the data for creating the plot.
 
-The main work is with the *created_date* column. A brief work on it and we can extract date from it.
+Now, let's prepare the data for the plot.
 
-R is a bit dumb, so I have to use the function *mdy_hms()* to tell R the format of the characters in the relevant column.
-
+The main work is with the *created_date* column. Here, I must use the function *mdy_hms()* to tell R the format of the characters in the column, so it can treat it as date.
 
 
 
@@ -60,7 +60,7 @@ rats_date <- rats %>%
     filter(n_sightings > 1)
 ```
 
-Below, is the my final plot.
+Below, is the final plot.
 
 I have experimented with different visualizations, but mostly weren't informative.
 
@@ -99,8 +99,8 @@ rats_date %>%
           axis.title.x = element_blank(),
           plot.title = element_text(family = "AppleGothic", face = "bold", size = 18),
           plot.subtitle = element_text(family = "Source Sans Pro", size = 14, color = "gray24", face = "bold"), 
-          panel.background = element_rect(color = "cyan3", fill = "cyan3"),
-          plot.background = element_rect(fill = "cyan2")
+          panel.background = element_rect(color = "grey", fill = "grey"),
+          plot.background = element_rect(fill = "white")
           )
 ```
 
@@ -150,7 +150,7 @@ rats_date %>%
 <img src="{{< blogdown/postref >}}index_files/figure-html/Evolution of rat sighting per borough-1.png" width="672" />
 
 
-We can see that the number of rat sightings raised in almost all boroughs, but has fallen in 2017.
+When compared to 2010, rat sightings increased in almost all boroughs, but has fallen in 2017.
 
 Brooklyn is the borough with more sightings and Staten Island the one with fewer complaints.
 
