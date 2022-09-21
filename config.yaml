@@ -81,7 +81,3 @@ markup:
     startLevel: 1
     endLevel: 4
     
-imaging:
-  resampleFilter: lanczos
-  quality: 90
-  anchor: smart
