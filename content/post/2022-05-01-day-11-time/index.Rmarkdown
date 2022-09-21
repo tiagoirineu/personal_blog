@@ -21,6 +21,8 @@ output:
     toc: true
 
 ---
+{{< toc >}}
+
 # Introduction
 
 

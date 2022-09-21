@@ -21,10 +21,12 @@ output:
     toc: true
 
 ---
+{{< toc >}}
+
 # Introduction
 
 
-In this lesson we discuss how to visualize time series. As in the other lessons, I will first go through the example material and later apply the lessons to a different dataset as exercise.
+In this lesson we discuss how to visualize time series. As in the other lessons, I will first go through the example material and later apply the lessons to a different dataset as an exercise.
 
 # Example
 
@@ -40,7 +42,7 @@ library(scales)
 ```
 We will use the *tidyquant* package to access data from [FRED](https://fred.stlouisfed.org/). This is a FED data repository with plenty of economic data.
 
-First we download the data using the code below. 
+First, we download the data using the code below. 
 
 
 ```r
@@ -95,7 +97,7 @@ fred_monthly_things
 
 ## Plotting time
 
-First, let's use a simple line chart to visualize how the american gdp evolved from 1990 to 2020.
+First, let's use a simple line chart to visualize how the american GDP evolved from 1990 to 2020.
 
 ```r
 gdp_only <- fred_raw %>% 
@@ -111,7 +113,7 @@ ggplot(gdp_only, aes(x = date, y = price)) +
 It's remarkable how fast the GDP recovered from the economic impact from Covid.
 
 **Unemployment Claims**
-Now, a look in how unemployment evolved in the same period.
+Now, a look in how the unemployment rate evolved in the same period.
 
 
 ```r

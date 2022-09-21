@@ -73,7 +73,7 @@ related:
 markup:
   defaultMarkdownHandler: goldmark
   goldmark:
-    renderer:
+    renderer: 
       unsafe: true
   highlight:
     codeFences: false
