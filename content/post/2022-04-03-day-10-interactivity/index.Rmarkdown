@@ -256,7 +256,7 @@ write.csv(data,"agri_data.csv")
 ```
 ```{r}
 data <- read.csv("agri_data.csv")
-data
+head(data)
 ```
 
 
