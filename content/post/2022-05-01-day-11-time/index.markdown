@@ -1,24 +1,33 @@
 ---
-title: 'Day 11: Time'
+title: Day 11 - Visualizing Time
 author: Tiago Irineu
-date: '2022-05-01'
-slug: day-11-time
+date: '2022-09-13'
+slug: Time
 categories: []
 tags: []
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2022-05-01T15:46:15-03:00'
+lastmod: '2022-09-11T23:45:13-03:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
----
-This lesson is about how to analyze time series in R.
+projects: [Data Visualization]
 
-### Example
+output:
+  blogdown::html_page:
+    toc: true
+
+---
+# Introduction
+
+
+In this lesson we discuss how to visualize time series. As in the other lessons, I will first go through the example material and later apply the lessons to a different dataset as exercise.
+
+# Example
+
 
 
 
@@ -29,9 +38,9 @@ library(tidyverse)
 library(tidyquant)   # Tidyquant R package for financial data manipulation
 library(scales)
 ```
-We will use the *tidyquant* package to access data from [FRED](https://fred.stlouisfed.org/).
+We will use the *tidyquant* package to access data from [FRED](https://fred.stlouisfed.org/). This is a FED data repository with plenty of economic data.
 
-
+First we download the data using the code below. 
 
 
 ```r
@@ -53,7 +62,7 @@ fred_raw <- tq_get(c("RSXFSN", # Advance retail sales
 
 
 
-Below, we make the data wider. 
+Below, we make the data wider and look in its first rows, so we can have a sense of the data. 
 
 
 ```r
@@ -84,24 +93,25 @@ fred_monthly_things
 ## # ... with 377 more rows
 ```
 
-This was just a brief demonstration of what can be done with the package.
+## Plotting time
 
-### Plotting time
-
-Usually lines are used to represent time series.
-
+First, let's use a simple line chart to visualize how the american gdp evolved from 1990 to 2020.
 
 ```r
 gdp_only <- fred_raw %>% 
     filter(symbol == "GDPC1")
 
 ggplot(gdp_only, aes(x = date, y = price)) +
-    geom_line()
+    geom_line() +
+    theme_bw()
 ```
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
 
+It's remarkable how fast the GDP recovered from the economic impact from Covid.
+
 **Unemployment Claims**
+Now, a look in how unemployment evolved in the same period.
 
 
 ```r
@@ -414,7 +424,7 @@ ggplot(retail_components_tidy,
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
 
 
-### Exercises
+# Exercise
 
 For the exercise I will replicate the example but using the Exchange Rate between Brazilian Reais and USD Dollars.
 
@@ -513,6 +523,9 @@ autoplot(fx_components) +
 ```
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="672" />
-At least for me, this was not as informative as the decomposition of retail sales discussed in the example.
+This graph is not really informative. We can that there is a yearly seasonality, that warrant a bit more of exploration. Besides that, it seems that the remainder explains too much of the variation.
+
 As it is just an exercise, I will let it here in this way.
+
+**THE END**
 

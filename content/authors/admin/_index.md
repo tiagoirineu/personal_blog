@@ -1,5 +1,5 @@
 ---
-bio: My interests include data analysis, probability, finance, and risk.
+bio: My interests include data analysis, data visualization, risk, and a lot of other things that I will probably never have enough time to study.
  
 education:
   courses:
@@ -13,9 +13,10 @@ education:
 email: "tiagoirineu@outlook.com"
 highlight_name: true
 interests:
-- Data analysis
-- Financial risk
-- Management
+- Data Analysis
+- Data Visualization
+- Risk
+- Statistics
 
 
 social:
@@ -38,10 +39,13 @@ superuser: true
 title: Tiago Irineu
 ---
 
-Hello, I am Tiago Irineu.
+Hello, I'm Tiago.
 
-I'm a master in Economics and I work in corporate finance.
+I'm a master in Economics and currently work as an FX Risk Analyst.
 
-Right now my focus is in mastering R and learning all the details related to financial risk management. 
+Right now I'm studying Financial Risk Management and R. Besides that, I'm interested in Statistics, modeling, and communication.
+
+*I built this site using the package blogdown in RStudio.*
+*If you also want to build a site using R, you can find a good tutorial [here](https://www.apreshill.com/blog/2020-12-new-year-new-blogdown/).*
 
 

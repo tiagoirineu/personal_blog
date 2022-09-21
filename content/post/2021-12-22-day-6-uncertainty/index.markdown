@@ -15,6 +15,11 @@ image:
   focal_point: ''
   preview_only: no
 projects: []
+
+output:
+    html_document:
+        toc: true
+    
 ---
 
 ## Uncertainty - day 6
@@ -41,10 +46,10 @@ library(tidyverse)
 ```
 
 ```
-## v ggplot2 3.3.5     v purrr   0.3.4
-## v tibble  3.1.5     v dplyr   1.0.7
-## v tidyr   1.1.3     v stringr 1.4.0
-## v readr   2.0.0     v forcats 0.5.1
+## v ggplot2 3.3.5.9000     v purrr   0.3.4     
+## v tibble  3.1.5          v dplyr   1.0.7     
+## v tidyr   1.1.3          v stringr 1.4.0     
+## v readr   2.0.0          v forcats 0.5.1
 ```
 
 ```
